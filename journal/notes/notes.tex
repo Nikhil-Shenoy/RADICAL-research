@@ -1,0 +1,146 @@
+\documentclass[letterpaper,english,12pt]{article}
+
+\begin{document}
+
+\textbf{5/30/2014}
+\begin{itemize}
+	\item SAGA
+		\begin{itemize}
+			\item standardized API for developing distributed applications that can run on grid and cloud infrastructure.
+			\item A light-weight access layer for distributed computing infrastructure.
+			\item Emphasis on job handling, monitoring, file transfer/management
+			\item Goals:
+				\begin{itemize}
+					\item Uniform access to distributed computing infrastructures and middleware
+					\item Stable programming interface for distributed applications/frameworks/tool development
+					\item Ease of use
+					\item Simple user-space deployment in heterogeneous distributed computing environments
+				\end{itemize}
+			\item Implements flexible \underline{adaptor} architecture.
+			\item Adaptor: dynamically loadable modules that interface the API with different middleware systems and services.
+		\end{itemize}
+	\item Job Submission Systems: SSH and GSISSH, PBS and Torque, Sun Grid Engine
+	\item File/Data Management: HTTP/HTTPS SFTP/GSIFTP
+	\item Resource Management/Clouds: EC2(libcloud)
+	\item PanDA Project / Brookhaven National Laboratory
+		\begin{itemize}
+			\item BNL uses RADICAL-SAGA to extend PanDA (the workload management system for the ATLAS project) to US HPC resources.
+			\item It is an advanced scheduling and analysis tool
+			\item Short for Production and Distributed Analysis.
+			\item Manages ATLAS's data tasks from CERN server.
+			\item Workflow is 1.8 million computing jobs/day distributed among about 100 computing centers worldwide.
+			\item Manages 150 petabytes of data (about 75 million hours of HD video).
+			\item Scheduling is an issue. Not working at full capacity if you're not using every node in your super-computing system.
+			\item Grid System
+				\begin{itemize}
+					\item Uses a Tier system. Data is passed from tier to tier for analysis
+					\item Tier-0: LHC @ CERN. Gets the raw data, then passes to Tier-1
+					\item Tier-1: ten locations which recieve the data from Tier-0. BNL is in Tier-1. Connected directly to Tier-0 using a dedicated high-performance optical network path.
+					\item Tier-2: Computing facilities which provide data storage and processing capacities for in-depth user analysis and simulation. Ex.: other facilities in the US. I think RADICAL is here.
+				\end{itemize}
+			\item Grid Infrastructure
+				\begin{itemize}
+					\item Consists of three key components: "fabric", "applications", "middleware"
+					\item Fabric: Hardware. Processor farms with thousands of computing nodes, disk and tape storage, networking
+					\item Applications: Software that scientists use to interpret the data
+					\item Middleware: links the Fabric and the Applications. I believe SAGA fits here.
+				\end{itemize}
+		\end{itemize}
+	\item Physics
+		\begin{itemize}
+			\item Field associated with Higgs necessary for other particles to have mass
+			\item Higgs boson is very massive and decays almost instantly.
+			\item LHC creates 800 million collisison between protons per second, yet it only creates a Higgs boson only once every 1-2 hours.
+		\end{itemize}
+\end{itemize}
+
+\textbf{6/22/14}
+\begin{itemize}
+	\item Distributed Computing
+		\begin{itemize}
+			\item Distributed system: network of autonomous computers that communicate with each other in order to achieve a goal.
+			\item Computers in the distributed system are independent and do not physically share memory or processes
+			\item Communite through messages.
+		\end{itemize}
+	\item Client/Server Systems
+		\begin{itemize}
+			\item Single server that provides a service, and multiple clients that communicate with the server to consumer its products.
+			\item Client does not need to know how the service is provided or how the data is calculated.
+			\item Server does not need to know how the data is going to be used.
+			\item \textbf{Drawback: } If the server goes down, the entire system stops working.
+			\item \textbf{Drawback: } Resources become scarce if there are too many clients. Cliients increase the demand on the system without contributing any computing resources
+			\item \textbf{Drawback: } Client-server systems cannot shrink and grow with changing demand.
+		\end{itemize}
+	\item Peer-to-Peer Systems
+		\begin{itemize}
+			\item Labor is divided among all components of the system
+			\item All the computers send and receive data, and they all contribute some processing power and memory.
+			\item Peers need to communicate with each other reliably. Need organized network structure.
+			\item Data transfer and storage are most common applications.
+			\item Data transfer: each computer contributes to send data over the network. If the destination computer is in a particular computer's neighborhood, that computer helps send data along. 
+			\item Data storage: data set may be too large to store on one computer. Portions are stored on each computer in the system.
+		\end{itemize}
+	\item Modularity
+		\begin{itemize}
+			\item Components of a system should be black boxes with respect to each other.
+			\item Easy to understand, change, and expand.
+			\item Defective components can be easily swapped out
+			\item Bugs/malfunctions are easy to localize
+		\end{itemize}
+	\item Message Passing
+		\begin{itemize}
+			\item Message has three parts: \textbf{sender}, \textbf{recipient}, \textbf{content}.
+			\item Sender and receiver must be explicitly encoded in the message.
+			\item Message content can be complex data structures, but they are all sent as 1s and 0s.
+			\item Message protocol: set of rules for encoding and decoding messages.
+			\item All components in distributed system must understand the protocol in order to communicate with each other.
+		\end{itemize}
+	\item Correctness in Parallel Computation
+		\begin{itemize}
+			\item Two criteria: Outcome should always be the same. Outcome should be the same as if the code was executed sequentially.
+			\item Critical section: sections of code that need to be executed as if they were a single instruction, but are actually made up of smaller statements.
+			\item Atomicity: quality that describes instructions that cannot be broken into smaller units or interrupted because of the design of the processor. 
+			\item Serialization: processes temporarily act as if they were being executed in serial.
+			\item Synchronization: uses mutual exclusion and conditional synchronization
+				\begin{itemize}
+					\item Mutual exclusion: processes taking turns to access a variable
+					\item Conditional synchronization: processes wait until a condition is satisfied before continuing.
+				\end{itemize}
+		\end{itemize}
+	\item Protecting Shared State: Locks and Semaphores
+		\begin{itemize}
+			\item Locks/Mutexes: shared objects that are commonly used to signal that shared state is being read or modified.
+			\item Python uses \textbf{acquire()} and \textbf{release()}
+			\item When a lock is acquired by a process, any other process that tries to perform the \textbf{acquire()} action will automatically be made to wait until the lock becomes free.
+			\item Semaphores: signals used to protect access to limited resources. Only a certain number of processes are allowed to access the shared data.
+
+			\item Condition variables:
+				\begin{itemize}
+					\item Objects that act as signals that a condition has been satisfied.
+					\item Processes that need a condition to be satisfied can make themselves wait on a condition variable until some other process modifies it to tell them to proceed.
+					\item Python uses \textbf{condition.wait()} to wait on a CV.
+					\item \textbf{condition.notify()} wakes up one process, and \textbf{condition.notifyAll()} wakes up all waiting processes.
+				\end{itemize}
+		\end{itemize}
+	\item Deadlock
+		\begin{itemize}
+			\item Two or more processes are stuck, waiting for each other to finish.
+			\item \textbf{Circular Wait: } No process can continue because it is waiting for other processes that are waiting for it to complete.
+			\item \textbf{No preemption: } One process cannot just yank a shared variable from another process that is using it
+			\item \textbf{Hold and wait: }
+			\item \textbf{Mutual Exclusion: }
+			\item How to prevent deadlock: lock the mutexes in the same order.
+		\end{itemize}
+\end{itemize}
+			
+
+
+
+\begin{thebibliography}{1}
+	\bibitem{cit1} Williams, Leo. "World's Most Powerful Accelerator Comes to Titan with a High-Tech Scheduler." {\em World's Most Powerful Accelerator Comes to Titan with a High-Tech Scheduler}. Brookhaven National Laboratory, 7 May 2014. Web. 31 May 2014.
+
+	\bibitem{cit2} "Computing Support for ATLAS." {\em Computing}. Brookhaven National Laboratory, n.d. Web. 31 May 2014.
+	\bibitem{cit3} "Chapter 4: Distributed and Parallel Computing." \em{Chapter 4: Distributed and Prallel Computing."}. University of California, Berkeley, n.d. Web. 22 June 2014.
+\end{thebibliography}
+
+\end{document}

@@ -1,0 +1,8 @@
+NUMPY
+	- good for linear algebra and Fourier Transforms. It does these just about as fast as it gets.
+
+Book:
+	- Python for Data Analysis
+
+Pandas:
+	- Should pick up how to use Pandas

@@ -1,0 +1,9 @@
+Use India 
+
+Go to india.futuregrid.org 
+Look at machine descriptions on FutureGrid documentation page
+
+Complete the RADICAL-Pilot tutorials on the FutureGrid machine.
+
+XSEDE set of machines that support actual science. They will get the FBI at your house and kick you off the set
+FutureGrid is used for testing. They will congratulate you on breaking something and testing.
