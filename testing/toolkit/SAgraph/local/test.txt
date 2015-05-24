@@ -1,0 +1,72 @@
+
+-1 Pre-loop step 
+------------------------------------------------------------------
+ * Instances                : 1
+ * Step start time          : 2015-01-23 16:06:41.367699
+ * Step stop time           : 2015-01-23 20:23:28
+ * Step duration            : 4:16:46.632301
+ * Avg. duration / instance : 0:00:00
+
+1 Simulation step 1
+------------------------------------------------------------------
+ * Instances                : 1
+ * Step start time          : 2015-01-23 16:06:41.367711
+ * Step stop time           : 2015-01-23 20:23:29
+ * Step duration            : 4:16:47.632289
+ * Avg. duration / instance : 0:00:00
+
+2 Analysis step 1
+------------------------------------------------------------------
+ * Instances                : 1
+ * Step start time          : 2015-01-23 16:06:41.367718
+ * Step stop time           : 2015-01-23 20:23:31
+ * Step duration            : 4:16:49.632282
+ * Avg. duration / instance : 0:00:01
+
+3 Simulation step 2
+------------------------------------------------------------------
+ * Instances                : 1
+ * Step start time          : 2015-01-23 16:06:41.367723
+ * Step stop time           : 2015-01-23 20:23:31
+ * Step duration            : 4:16:49.632277
+ * Avg. duration / instance : 0:00:00
+
+4 Analysis step 2
+------------------------------------------------------------------
+ * Instances                : 1
+ * Step start time          : 2015-01-23 16:06:41.367729
+ * Step stop time           : 2015-01-23 20:23:33
+ * Step duration            : 4:16:51.632271
+ * Avg. duration / instance : 0:00:01
+
+5 Simulation step 3
+------------------------------------------------------------------
+ * Instances                : 1
+ * Step start time          : 2015-01-23 16:06:41.367734
+ * Step stop time           : 2015-01-23 20:23:33
+ * Step duration            : 4:16:51.632266
+ * Avg. duration / instance : 0:00:00
+
+6 Analysis step 3
+------------------------------------------------------------------
+ * Instances                : 1
+ * Step start time          : 2015-01-23 16:06:41.367740
+ * Step stop time           : 2015-01-23 20:23:35
+ * Step duration            : 4:16:53.632260
+ * Avg. duration / instance : 0:00:00
+
+7 Simulation step 4
+------------------------------------------------------------------
+ * Instances                : 1
+ * Step start time          : 2015-01-23 16:06:41.367745
+ * Step stop time           : 2015-01-23 20:23:37
+ * Step duration            : 4:16:55.632255
+ * Avg. duration / instance : 0:00:00
+
+8 Analysis step 4
+------------------------------------------------------------------
+ * Instances                : 1
+ * Step start time          : 2015-01-23 16:06:41.367750
+ * Step stop time           : 2015-01-23 20:23:38
+ * Step duration            : 4:16:56.632250
+ * Avg. duration / instance : 0:00:00

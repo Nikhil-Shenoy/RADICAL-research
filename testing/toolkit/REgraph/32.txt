@@ -1,0 +1,40 @@
+
+Replica-Exchange Cycle 1
+------------------------------------------------------------------
+ * Replicas                : 32
+ * Cycle start time        : 2015-01-23 15:58:54.107135
+ * Cycle stop time         : 2015-01-23 18:15:42
+ * Cycle duration          : 2:16:47.892865
+ * Avg. duration / replica : 0:00:00.031250
+
+Replica-Exchange Cycle 2
+------------------------------------------------------------------
+ * Replicas                : 32
+ * Cycle start time        : 2015-01-23 15:58:54.107163
+ * Cycle stop time         : 2015-01-23 18:16:02
+ * Cycle duration          : 2:17:07.892837
+ * Avg. duration / replica : 0:00:00
+
+Replica-Exchange Cycle 3
+------------------------------------------------------------------
+ * Replicas                : 32
+ * Cycle start time        : 2015-01-23 15:58:54.107199
+ * Cycle stop time         : 2015-01-23 18:16:18
+ * Cycle duration          : 2:17:23.892801
+ * Avg. duration / replica : 0:00:00.062500
+
+Replica-Exchange Cycle 4
+------------------------------------------------------------------
+ * Replicas                : 32
+ * Cycle start time        : 2015-01-23 15:58:54.107068
+ * Cycle stop time         : 2015-01-23 18:16:34
+ * Cycle duration          : 2:17:39.892932
+ * Avg. duration / replica : 0:00:00
+
+Replica-Exchange Cycle 5
+------------------------------------------------------------------
+ * Replicas                : 32
+ * Cycle start time        : 2015-01-23 15:58:54.107107
+ * Cycle stop time         : 2015-01-23 18:16:50
+ * Cycle duration          : 2:17:55.892893
+ * Avg. duration / replica : 0:00:00.062500

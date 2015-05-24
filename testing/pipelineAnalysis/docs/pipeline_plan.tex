@@ -1,0 +1,42 @@
+\documentclass{article}
+
+\title{Pipeline Analysis}
+\author{Nikhil Shenoy}
+
+\begin{document}
+	\maketitle
+	\pagenumbering{gobble}
+	\newpage
+	\pagenumbering{arabic}
+
+	\section*{Purpose} % Asterisk before the name of the section removes the automatic numbering
+	
+	Characterize the Pipeline pattern, and eventually all other EnsembleMD Patterns, using factors such as pilot size, number of pipeline instances, and number of steps per pipeline. Result of characterization should be a number of plots that describe the execution time of each pattern under a certain configuration of the input parameters
+	
+	\section*{Procedure}
+	\begin{enumerate}
+		\item Using the "Idle" kernel as an initial task and a walltime of 15 minutes, run the Pipeline pattern while scaling parameters with the following patterns:
+
+		\begin{itemize}
+			\item Pilot size = [16,64,128]
+			\item Number of Pipeline Instances = [16,64,128]
+			\item Number of Steps per Pipeline = [16,64,128]
+			\item Additional parameters should follow the same scaling pattern
+		\end{itemize}
+		
+		\item Iterate through the scaling parameters such that all \(n^3\) configurations, where \(n\) is the number of factors, are tested.
+		\item Repeat each experiment until the results are consistent. The arithmetic mean of all execution times will be the representative value of the input configuration.
+		\item Using the data recorded in the execution\_profile\_dictionary, record the percentage of total execution time that is taken up by each stage of execution (stage-in, execution, stage-out).
+
+	\end{enumerate}
+
+	\section*{Expected Results}
+	\begin{enumerate}
+		\item With all other factors held constant, execution time is expected to decrease as the Pilot Size is increased.
+		\item With all other factors held constant, execution time is expected to stay constant as the Number of Pipeline Instances is increased.
+		\item With all other factors held constant, execution time is expected to increase as the Number of Steps per Pipeline is increased.
+	\end{enumerate}
+
+
+\end{document}
+		

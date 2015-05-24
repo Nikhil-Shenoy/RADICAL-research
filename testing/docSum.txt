@@ -1,0 +1,9 @@
+- No mention of the available Kernels in the ENMD documentation. The API exists, but there isn't anything in the documenation that tells me that a misc.chksum Kernel is available
+- Search feature of the ENMD documentation doesn't return anything
+- Where can I find out more about the attributes associated with the AllPairs class? Other than the Github, at least. There isn't enough in the documentation for it.
+- Security Contexts need more documentation in section 12
+- No description of the pattern either.
+- No picture for AllPairs pattern
+- When I do "ensemblemd-profile -p <csv file>", I think it would be helpful to include the units on the descriptions
+
+

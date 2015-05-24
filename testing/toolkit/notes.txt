@@ -1,0 +1,9 @@
+- Security Contexts need more documentation in section 12
+- No description of the pattern either.
+- No picture for AllPairs pattern
+- When I do "ensemblemd-profile -p <csv file>", I think it would be helpful to include the units on the descriptions
+
+
+Replica Exchange
+	- What exactly is a Replica? Is it just separate instances of a simulation with different parameters? If so, what makes it different than the generic bag of tasks?
+	- 

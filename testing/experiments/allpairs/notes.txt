@@ -1,0 +1,7 @@
+- No mention of Kernels in the ENMD documentation
+- Search feature of the ENMD documentation doesn't return anything
+- Where can I find out more about the attributes associated with the AllPairs class? Other than the Github, at least. There isn't enough in the documentation for it.
+
+
+How to try out your changes:
+	pip install --upgrade . in the devel directory

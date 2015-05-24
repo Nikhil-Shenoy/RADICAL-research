@@ -1,0 +1,9 @@
+- Need end-user model that demonstrates ENMD's capabilities
+- Measure same workload across all patterns
+- Plot them the same way
+- Start with zero data, zero waittime and scale it up
+- Run the simulations using Stampede
+- Scale to 128 cores, 1000 if you can
+- Use ENMD mailing list to update team on the experiments
+- Task should take approximately 15 minutes to run
+- Weekly updates to the mailing list on progress
