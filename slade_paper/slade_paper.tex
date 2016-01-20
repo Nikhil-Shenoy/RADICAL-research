@@ -120,12 +120,13 @@
 % *** GRAPHICS RELATED PACKAGES ***
 %
 \ifCLASSINFOpdf
-  % \usepackage[pdftex]{graphicx}
+  \usepackage[pdftex]{graphicx}
   % declare the path(s) where your graphic files are
   % \graphicspath{{../pdf/}{../jpeg/}}
+  \graphicspath{{img/}}
   % and their extensions so you won't have to specify these with
   % every instance of \includegraphics
-  % \DeclareGraphicsExtensions{.pdf,.jpeg,.png}
+  \DeclareGraphicsExtensions{.pdf,.jpeg,.png}
 \else
   % or other class option (dvipsone, dvipdf, if not using dvips). graphicx
   % will default to the driver specified in the system graphics.cfg if no
@@ -331,7 +332,7 @@
 % use a multiple column layout for up to three different
 % affiliations
 \author{\IEEEauthorblockN{Nikhil Shenoy}
-\IEEEauthorblockA{School of Electrical and\\Computer Engineering\\
+\IEEEauthorblockA{Electrical and\\Computer Engineering\\
 Rutgers University - New Brunswick\\
 Piscataway, NJ 08854\\
 Email: nrs76@scarletmail.rutgers.edu}
@@ -436,7 +437,23 @@ RADICAL-Pilot (RP) is an implementation of a pilot-job system created by the RAD
 
 At any given time, the Pilot is in one of the following states: New, Pending\_Launch, Launching, Pending\_Active, Active, Done, Cancelled, or Failed. Naturally, a Pilot begins in the New state when it is created. Once the Pilot has been instantiated, internal modules change the Pilot's state to Pending\_Launch, and after being placed in the queue, to Launching. The scheduler will then schedule the Pilot as it would any other normal job, and the Pilot's state is changed to Pending\_Active. After the Pilot has been granted its resources, it starts the Agent and changes its status to Active. In this state, the Pilot will continue to accept tasks from the application and schedule them efficiently across the given resources until no more tasks remain. At this point, the Pilot can be in either Done, Cancelled, or Failed. Clearly, the Pilot will be Done if all tasks have executed without any errors. If the Agent is interrupted, such as with the interrupt signal, then the Pilot will become Cancelled. If an error occurs, the Agent changes the Pilot state to Failed and stops execution.
 
+\begin{figure}[h]
+\caption{Pilot State Diagram}
+\centering
+\includegraphics[width=7cm,height=6cm]{pilot-state-model}
+\end{figure}
+
 Compute Units have a similar set of states. A Compute Unit can take on one of the following states: New, UMGR\_Scheduling, UMGR\_Staging\_Input, Agent\_Staging\_Input, Agent\_Scheduling, Executing, Agent\_Staging\_Output, UMGR\_Staging\_Output, Done, Cancelled, Failed. The UMGR in the state names stands for the Unit Manager which, true to its name, manages units and what Pilots they are associated with. This occurs in the UMGR\_Scheduling phase, after the Compute Unit is instantiated in the New state. In the UMGR\_Staging\_Input phase, the Compute Unit's state transitions differ from that of the Pilot; since the Compute Unit represents the task to be executed, it must receive all the input it needs in order to run. During this phase, the Compute Unit receives the name of the executable, command line parameters, input datafiles, and any other information. The Agent ensures that the input staging occurs properly in the Agent\_Staging phase and begins executing the task on a portion of the resources in the Executing state. Once the task finishes executing, the Agent\_Staging\_Output and UMGR\_Staging\_Output states gather any output data and returns it to the application. Finally, the Compute Unit enters one of the three final states in the same way that the Pilot does. 
+
+
+\begin{figure}[h]
+\caption{Compute Unit State Diagram}
+\centering
+\includegraphics[width=7cm,height=9cm]{unit-state-model}
+\end{figure}
+
+
+
 % Describe how EnMD works
 
 % Describe what you are going to be talking about in your paper.
@@ -447,20 +464,40 @@ The molecular dynamics community works on simulating the interactions of atoms a
 
 Heterogeniety of DCRs compound this problem. Execution of a task on a DCR requires an intimate knowledge of all available resources; each instance of the existing molecular dynamics software is designed for at most a handful of resources, and the architectures of all of those systems can differ. Introducing a new DCR into the software could require a scientist to restructure major components, inevitably leading to additional bugs, and would cost the scientist time and funding for the project. 
 
+% Enter EnMD. How does it solve the problem?
 In this paper, we present the EnsembleMD Toolkit as a solution to these problems. The Toolkit is centered around the concept of an ensemble, which is defined as task consisting of several simulations with different input parameters. Using the ensemble as the primary entity, our software provides three unique features:
 \begin{enumerate}[(i)]
   \item Instantiation of ensembles is separated from the simulation tool
   \item Execution patterns based on ensembles
-  \item Decoupling of pattern execution from pattern expression
+  \item Decoupling of ``what to do'' from ``how to do it''
   \item Dynamic execution on a range of DCRs using the RADICAL-Pilot API
 \end{enumerate}
-% Enter EnMD. How does it solve the problem?
+
+% Include section on EnMD objectives, like in Vivek's paper?
 
 % Describe the EnMD architecture
+The EnsembleMD Toolkit consists of three main components; the Application Pattern, the Execution Context, and the Kernel Plugin. The first component that the user interacts with is the Application Pattern, which is a general template for executing tasks. For example, the Pipeline Application Pattern can run a collection of tasks sequentially as a series of steps. In this scheme, the pattern will wait for each step to finish before moving on to the next step. The pattern also allows for several instances of a given pipeline, as shown in Figure 1, if redundancy is required. Other available patterns include Simulation-Analysis and the Replica Exchange.
 
+\begin{figure}[h]
+\caption{Block Diagram of the Pipeline Pattern}
+\centering
+\includegraphics[width=7cm,height=5cm]{pipeline_pattern}
+\end{figure}
 
+These patterns present the user with high-level descriptions of control flow which are task-independent. The user need only choose a pattern and provide it with the details necessary for the simulation, and the API takes care of the rest. By doing this, the details of executing the simulation are abstracted from the user, providing an interface that makes translating biological experiments into computer simulations very simple.
 
-% The introduction section should give a brief background on how RADICAL-Pilot works and how EnsembleMD works. There will probably need to be a little more than that here.
+The Execution Context represents the DCR that the simulation is running on. It contains the infrastructure needed to interface with the machine itself, and is the agent that allows the Toolkit to adapt to and include a variety of resources. Its main functions are to allocate and deallocate the resource, as well as run an execution pattern on the resource. Aside from specifying which resource to use, the user does not interact with this component directly as it is meant to be behind the wall of abstraction. 
+
+Finally, the Kernel Plugin represents the scientific tool to be used. This can be anything from molecular dynamics executables such as Amber to simple tasks such as counting the number of characters in a file. The Toolkit provides a list of built-in kernels, but provides a mechanism for users to add their own. The Kernel Plugin abstracts aspects of the tools that are specific to a particular resource and presents a uniform interface with the user can define tasks.
+
+\begin{figure}[h]
+\caption{The EnsembleMD Toolkit Architecture}
+\centering
+\includegraphics[width=10cm,height=11cm]{enmdtk_arch}
+\end{figure}
+
+% Explanation of each Application Pattern?
+
 
 % \hfill mds
  
