@@ -52,6 +52,10 @@
 
 
 \documentclass[conference]{IEEEtran}
+
+% Packages
+\usepackage{enumerate}
+
 % Some Computer Society conferences also require the compsoc mode option,
 % but others use the standard conference format.
 %
@@ -412,7 +416,13 @@ This research seeks to eliminate the drawbacks of traditional processing methods
 % I wish you the best of success.
 
 % Briefly describe how traditional systems work
-Traditional distributed systems utilize batch queueing systems in order to schedule jobs to the system's resources. In such systems, scripts are written to execute several different tasks sequentially, with each task being told what data and resources are available to it. Each of the tasks executes accordingly, and the script collects the output and returns the results to the user. The main advantage in using such batch systems is that, using the correct task scheduling policy, all the jobs can be executed sequentially and automatically. Each job is placed in a queue, and then the scheduling policy decides which job to run and where it should run. Many policies exist for selecting a job; among the simplest are the first-come first-serve (FCFS), which schedules jobs as the come in,  and the multi-level feedback queue (MLFQ), which shuffles jobs between several queues by the amount of remaining time left. Once a job is chosen to be run, the scheduler assigns the requested resources, if available, and the job executes, completes, and returns its results. However, this scheduling scheme can result in unused resources for the duration of the job's execution. To alleviate this problem, the concept of Pilot-Jobs was introduced. 
+Traditional distributed systems utilize batch queueing systems in order to schedule jobs to the system's resources. In such systems, scripts are written to execute several different tasks sequentially, and a scheduler assigns the tasks the resources it requires. The problem with this approach is that since a task will most likely require only a fraction of the available resources, the remainder remains idle. Leaving cores unutilized severely limits the efficiency and throughput of the system and must be avoided. Additionally, the scheduler does not account for attributes specific to the application, which include the number of cores, the size of the task, and whether the task has multi-threaded, multi-process, or serial execution. These problems are carried with the user who, in many cases, is attempting to run computation-heavy scientific simulations.
+
+% Introduce the necessity of EnsembleMD here
+
+
+
+To alleviate this problem, the concept of Pilot-Jobs was introduced. 
 
 % Briefly describe how pilots work
 A pilot job is a special type of container designed to process and manage several different tasks during its lifetime. In traditional processing schemes, a job generally consists of running the same executable repeatedly with varying parameters, with each instance becoming a process that is submitted to the scheduler. Each of these instances must wait to have their resource requests fulfilled and then be correctly scheduled in order to execute. In a pilot scheme, information about each instance is associated with the pilot, and only the pilot is placed into the scheduling queue. Once the scheduler schedules the pilot, it then establishes communication with the user and accepts tasks. The user can now schedule tasks directly to the pilot, which then runs the task using a portion of its allocated resources, assuming that the task's resource requirement does not exceed the amount of available resources. If resources are still available after the scheduling of the initial task, the pilot will accept additional tasks and schedule them to those resources. The user can continue to schedule tasks to the pilot until the wall time of the pilot expires.
@@ -431,7 +441,22 @@ Compute Units have a similar set of states. A Compute Unit can take on one of th
 
 % Describe what you are going to be talking about in your paper.
 \subsection{EnsembleMD Toolkit}
-EnMD stuff goes here
+  
+% Background on molecular dynamics, and then a brief survey of existing MD technologies and why they are inadequate
+The molecular dynamics community works on simulating the interactions of atoms and molecules, which can be generally classified as N-body problems. To run these simulations, the scientists must submit their tasks to distributed computing resources (DCRs) using software specifically designed for their experiments. There are many such softwares throughout the community, but since there is no standard that integrates all the functionalities into a single framework, progress is hindered due to a lack of portability and extensibility. The absence of this standard prevents scientists from adapting to and creating new simulation patterns, leading to the larger problem of unscalable software. 
+
+Heterogeniety of DCRs compound this problem. Execution of a task on a DCR requires an intimate knowledge of all available resources; each instance of the existing molecular dynamics software is designed for at most a handful of resources, and the architectures of all of those systems can differ. Introducing a new DCR into the software could require a scientist to restructure major components, inevitably leading to additional bugs, and would cost the scientist time and funding for the project. 
+
+In this paper, we present the EnsembleMD Toolkit as a solution to these problems. The Toolkit is centered around the concept of an ensemble, which is defined as task consisting of several simulations with different input parameters. Using the ensemble as the primary entity, our software provides three unique features:
+\begin{enumerate}[(i)]
+  \item Instantiation of ensembles is separated from the simulation tool
+  \item Execution patterns based on ensembles
+  \item Decoupling of pattern execution from pattern expression
+  \item Dynamic execution on a range of DCRs using the RADICAL-Pilot API
+\end{enumerate}
+% Enter EnMD. How does it solve the problem?
+
+% Describe the EnMD architecture
 
 
 
@@ -448,13 +473,12 @@ EnMD stuff goes here
 \section{Experiments}
 
 
-\subsection{Subsection Heading Here}
-Subsection text here.
+\subsection{Performance}
 
+\subsubsection{Weak Scaling}
+\subsubsection{Strong Scaling}
 
-\subsubsection{Subsubsection Heading Here}
-Subsubsection text here.
-
+\subsection{New Modules}
 
 % An example of a floating figure using the graphicx package.
 % Note that \label must occur AFTER (or within) \caption.
