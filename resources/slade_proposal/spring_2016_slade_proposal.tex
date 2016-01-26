@@ -1,0 +1,47 @@
+\documentclass{article}
+
+
+\begin{document}
+\title{Slade Scholar Program: Performance Testing and Software Additions to EnsembleMD Toolkit}
+\author{Nikhil Shenoy\\
+		Computer Engineering Class of 2016\\
+		RUID: 145003806}
+\date{Spring 2016}
+\maketitle
+
+\begin{abstract}
+Much of today's scientific experiments have become computation driven, and the amount of data that needs to be processed can be very large. Traditional data processing techniques relied on scheduling tasks directly through the job scheduler on a cluster, and then running the job using a Message Passing library to achieve the desired parallelism. However, many drawbacks were discovered with this approach, with the most prominent being extended wait times for jobs in the scheduling queue. This problem, coupled with scientists' increasing demand for fast, responsive simulations, has led to inefficient systems and a lack of progress. 
+
+This research seeks to eliminate the drawbacks of traditional processing methods by utilizing an existing Pilot-Job system, RADICAL-Pilot, to process problems in molecular dynamics. The resultant software, the EnsembleMD Toolkit, is designed to to efficiently manage and assign tasks to distributed resources using Pilots, and to abstract the details of resource management away from the user. Such an abstraction will allow the user to focus on the science of his simulation rather than the complexities of running the simulation. Specifically, this work analyzes the performance of EnsembleMD modules and details the development of additional modules for the API.
+\end{abstract}
+
+\section*{Research Team}
+\begin{itemize}
+	\item Nikhil Shenoy (nrs76@scarletmail.rutgers.edu)
+	\item Prof. Shantenu Jha (shantenu.jha@rutgers.edu)
+\end{itemize}
+
+\section*{Project Plan}
+\begin{itemize}
+	\item Technical
+	\begin{itemize}
+		\item Continue performance testing on EnsemblMD Toolkit
+		\begin{itemize}
+			\item Current testing is pattern-based; may change to other components in the future
+			\item Identify bottlenecks and help fix them.
+		\end{itemize}
+		\item Develop new modules towards the Toolkit
+		\begin{itemize}
+			\item Work on new version of Pipeline pattern (bag of pipelines)
+		\end{itemize}
+		\item Complete Slade Scholar program by writing a cohesive technical paper summarizing all work done over the two semesters of the program.
+	\end{itemize}
+	\item Non-Technical
+	\begin{itemize}
+		\item Devote at least 10 hours per week towards research
+		\item Maintain weekly journals documenting activity for the week.
+		\item 1-1 meetings to discuss progress
+	\end{itemize}
+\end{itemize}
+
+\end{document}
