@@ -12,7 +12,7 @@
 \begin{abstract}
 Much of today's scientific experiments have become computation driven, and the amount of data that needs to be processed can be very large. Traditional data processing techniques relied on scheduling tasks directly through the job scheduler on a cluster, and then running the job using a Message Passing library to achieve the desired parallelism. However, many drawbacks were discovered with this approach, with the most prominent being extended wait times for jobs in the scheduling queue. This problem, coupled with scientists' increasing demand for fast, responsive simulations, has led to inefficient systems and a lack of progress. 
 
-This research seeks to eliminate the drawbacks of traditional processing methods by utilizing an existing Pilot-Job system, RADICAL-Pilot, to process problems in molecular dynamics. The resultant software, the EnsembleMD Toolkit, is designed to to efficiently manage and assign tasks to distributed resources using Pilots, and to abstract the details of resource management away from the user. Such an abstraction will allow the user to focus on the science of his simulation rather than the complexities of running the simulation. Specifically, this work analyzes the performance of EnsembleMD modules and details the development of additional modules for the API.
+This research seeks to eliminate the drawbacks of traditional processing methods by utilizing an existing Pilot-Job system, RADICAL-Pilot, to process problems in molecular dynamics. The resultant software, the EnsembleMD Toolkit, is designed to to efficiently manage and assign tasks to distributed resources using Pilots, and to abstract the details of resource management away from the user. This abstraction is designed for the molecular dynamics community, which works on simulating the N-body interactions of atoms and molecules.To run these simulations, the scientists must submit their tasks to distributed computing resources (DCRs) using software specifically designed for their experiments. There are many such softwares throughout the community, but since there is no standard that integrates all the functionalities into a single framework, progress is hindered due to a lack of portability and extensibility. The absence of this standard prevents scientists from adapting to and creating new simulation patterns, leading to the larger problem of unscalable software. EnsembleMD Toolkit allows the user to focus on the science of his simulation rather than the complexities of running the simulation. Specifically, this work analyzes the performance of EnsembleMD modules and details the development of additional modules for the API.
 \end{abstract}
 
 \section*{Research Team}
@@ -34,6 +34,8 @@ This research seeks to eliminate the drawbacks of traditional processing methods
 		\begin{itemize}
 			\item Work on new version of Pipeline pattern (bag of pipelines)
 		\end{itemize}
+		\item Participate in release testing
+		\item Maintain functionality of example code in the documentation
 		\item Complete Slade Scholar program by writing a cohesive technical paper summarizing all work done over the two semesters of the program.
 	\end{itemize}
 	\item Non-Technical
