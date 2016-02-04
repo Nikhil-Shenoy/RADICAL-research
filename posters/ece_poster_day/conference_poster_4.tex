@@ -12,7 +12,24 @@
 % License:
 % CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
 %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Sections:
+% 	- SAGA
+% 	- RP
+% 	- ENMD
+% 	- How to use RADICAL-Cybertools
+% 	- Who uses RADICAL-Cybertools
+	% - EXTASY
+	% - REPEX
+
+
+
+
+
+
+
+
 
 %----------------------------------------------------------------------------------------
 %	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
@@ -81,7 +98,15 @@ linewidth=2pt % Width of the border lines around content boxes
 %----------------------------------------------------------------------------------------
 
 \headerbox{What does RADICAL do?}{name=objectives,column=0,row=0}{
-RADICAL Cybertools is an abstractions-based suite of well-defined capabilities that are architected for scalable, interoperable and sustainable approaches to support science on a range of high-performance and distributed computing systems. It currently consists of two components: RADICAL-Pilot: a scalable and flexible Pilot-Job system that provides flexible application-level resource management capabilities, and RADICAL-SAGA: a lightweight interface that provides a standards-based interoperability across a range of computing systems. Using these two tools, the group develops tools for computationally-intensive scientific applications.
+RADICAL Cybertools is a collections abstraction-based tools that are architected for scalable, interoperable and sustainable operations on high-performance and distributed computing systems. The three main components of the suite are:
+
+\begin{itemize}\compresslist
+\item RADICAL-SAGA 
+\item RADICAL-Pilot (RP)
+\item EnsembleMD Toolkit
+\end{itemize}
+
+The RADICAL group develops these components as open source projects with the goal of providing application level control over high-performance resources, as in the case of RP, and abstracting common tasks and patterns across those resources, as in the case of EnsembleMD. The Cybertools account for the heterogeniety of distributed computing resources (DCRs) and expose simple interfaces to the user for work at various levels (rephrase?).
 
 \vspace{0.3em} % When there are two boxes, some whitespace may need to be added if the one on the right has more content
 }
@@ -91,7 +116,17 @@ RADICAL Cybertools is an abstractions-based suite of well-defined capabilities t
 %----------------------------------------------------------------------------------------
 
 \headerbox{Why Pilots?}{name=introduction,column=1,row=0,bottomaligned=objectives}{
-Currently, many scientific simulations are performed by analyzing many instances of a simulation with varying parameters. Submitting and executing these is proportional to the number of simulations submitted, as each one must wait in the queue and be scheduled individually. The time-to-completion of these tasks becomes extended due to this, causing large experiments to run for undesirable lengths of time. Furthermore, the resources granted to each simulation may not allocated in an efficient way; for example, some instances may be MPI-based and depend on the proximity of one simulation's cores to another's. The Pilot was invented to assuage these issues.
+Currently, many scientific simulations are performed by submitting many similar executables to a DCR and then waiting for each to be scheduled, executed, and probed for output data. The time-to-completion for such simulations becomes impractical as the number of tasks increases, which hinders progress on those projects. To combat this, Pilot systems were introduced to obviate the need to schedule each task, and have the following properties:
+
+\begin{itemize}\compresslist
+\item Submitting only the Pilot to circumvent the scheduler.
+\item Achieve spatial and temporal locality for related tasks.
+\item Decreased time-to-completion.
+\end{itemize}
+
+% instead, only the Pilot, bearing the description of the requested resources and computational tasks, is scheduled to the machine and coordinates execution. The main benefit of this scheme is that the scheduler has essentially been circumvented, allowing the same number of tasks to be submitted with a drastically reduced time-to-completion. RADICAL-Cybertools leverage this advantage to create software to simplify and expedite simulation.
+
+% and executing these is proportional to the number of simulations submitted, as each one must wait in the queue and be scheduled individually. The time-to-completion of these tasks becomes extended due to this, causing large experiments to run for undesirable lengths of time. Furthermore, the resources granted to each simulation may not allocated in an efficient way; for example, some instances may be MPI-based and depend on the proximity of one simulation's cores to another's. The Pilot was invented to assuage these issues.
 
 }
 
@@ -104,21 +139,20 @@ Currently, many scientific simulations are performed by analyzing many instances
 \begin{multicols}{2}
 \vspace{1em}
 \begin{center}
-\includegraphics[width=0.8\linewidth]{enmdtk_arch}
-\captionof{figure}{The Simulation-Analysis Pattern}
+\includegraphics[width=0.8\linewidth]{enmd_flow}
+\captionof{figure}{The EnsembleMD Architecture}
 \end{center}
-The EnsembleMD Toolkit consists of a series of Execution Patterns and Kernels that provide a simple interface for running high-performance tasks on a distributed computing resource (DCR). These tasks are usually submitted as a single executable with varying parameters, or what we define as an Ensemble. Using the API, a user can avoid placing each task into the queue by specifying the target machine through the Execution Context interface, the simulation through the Kernel interface, and the Execution Pattern through its own interface. Once these entities are specified, the RADICAL-Pilot API is invoked to translate the descriptions into a Pilot and its associated Compute Units, and then to execute the simulations on the desired resource. 
+The EnsembleMD Toolkit consists of a series of Execution Patterns and Kernels that provide a simple interface for running high-performance tasks on a distributed computing resource (DCR). Using the API, a user can avoid placing each task into the queue by specifying the target machine through the Execution Context interface, the simulation through the Kernel interface, and the Execution Pattern through the Pattern interface. Once these entities are specified, the RADICAL-Pilot API is invoked to translate the descriptions into a Pilot and its associated Compute Units, and then to execute the simulations on the desired resource. 
 \end{multicols}
 
 %------------------------------------------------
 
 \begin{multicols}{2}
 \vspace{1em}
-Sed fringilla tempus hendrerit. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Etiam ut elit sit amet metus lobortis consequat sit amet in libero. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vel sem magna. Nunc at convallis urna. isus ante. Pellentesque condimentum dui. Etiam sagittis purus non tellus tempor volutpat. Donec et dui non massa tristique adipiscing. Quisque vestibulum eros eu.
-
+Users of RADICAL-Pilot (RP) interact with the API by describing Compute Units, which represent the task, and a Pilot. Once instantiated and described, the Pilot is submitted to the Pilot Manager and the Compute Unit is submitted to the Unit Manager. These entities manage the launching of the Pilot and Compute Units onto the Distributed Computing Resources, where the Pilot Agent is instantiated and carries out the execution of the tasks.
 \begin{center}
-\includegraphics[width=0.8\linewidth]{placeholder}
-\captionof{figure}{Figure caption}
+\includegraphics[width=0.8\linewidth]{rp_flow}
+\captionof{figure}{The RADICAL-Pilot Architecture}
 \end{center}
 
 \end{multicols}
@@ -157,9 +191,9 @@ Maecenas viverra ligula a risus blandit vel tincidunt est adipiscing. Suspendiss
 \headerbox{Contact Information}{name=contact,column=3,aligned=references,above=bottom}{ % This block is as tall as the references block
 
 \begin{description}\compresslist
-\item[Web] www.university.edu/smithlab
-\item[Email] john@smith.com
-\item[Phone] +1 (000) 111 1111
+\item[Web] radical.rutgers.edu
+\item[RP Docs] http://radicalpilot.readthedocs.org/en/latest/ 
+\item[EnsembleMD Docs]b http://radicalensemblemd.readthedocs.org/en/latest/ 
 \end{description}
 }
 
@@ -167,36 +201,38 @@ Maecenas viverra ligula a risus blandit vel tincidunt est adipiscing. Suspendiss
 %	CONCLUSION
 %----------------------------------------------------------------------------------------
 
-\headerbox{Conclusion}{name=conclusion,column=2,span=2,row=0,below=results,above=references}{
+\headerbox{Additional Projects}{name=conclusion,column=2,span=2,row=0,below=results,above=references}{
+(AIMES, etc.)
 
-\begin{multicols}{2}
 
-% \tikzstyle{decision} = [diamond, draw, fill=blue!20, text width=4.5em, text badly centered, node distance=2cm, inner sep=0pt]
-% \tikzstyle{block} = [rectangle, draw, fill=blue!20, text width=5em, text centered, rounded corners, minimum height=4em]
-% \tikzstyle{line} = [draw, -latex']
-% \tikzstyle{cloud} = [draw, ellipse, fill=red!20, node distance=3cm, minimum height=2em]
+% \begin{multicols}{2}
 
-% \begin{tikzpicture}[node distance = 2cm, auto]
-% \node [block] (init) {Initialize Model};
-% \node [cloud, left of=init] (Start) {Start};
-% \node [cloud, right of=init] (Start2) {Start Two};
-% \node [block, below of=init] (init2) {Initialize Two};
-% \node [decision, below of=init2] (End) {End};
-% \path [line] (init) -- (init2);
-% \path [line] (init2) -- (End);
-% \path [line, dashed] (Start) -- (init);
-% \path [line, dashed] (Start2) -- (init);
-% \path [line, dashed] (Start2) |- (init2);
-% \end{tikzpicture}
+% % \tikzstyle{decision} = [diamond, draw, fill=blue!20, text width=4.5em, text badly centered, node distance=2cm, inner sep=0pt]
+% % \tikzstyle{block} = [rectangle, draw, fill=blue!20, text width=5em, text centered, rounded corners, minimum height=4em]
+% % \tikzstyle{line} = [draw, -latex']
+% % \tikzstyle{cloud} = [draw, ellipse, fill=red!20, node distance=3cm, minimum height=2em]
 
-%------------------------------------------------
+% % \begin{tikzpicture}[node distance = 2cm, auto]
+% % \node [block] (init) {Initialize Model};
+% % \node [cloud, left of=init] (Start) {Start};
+% % \node [cloud, right of=init] (Start2) {Start Two};
+% % \node [block, below of=init] (init2) {Initialize Two};
+% % \node [decision, below of=init2] (End) {End};
+% % \path [line] (init) -- (init2);
+% % \path [line] (init2) -- (End);
+% % \path [line, dashed] (Start) -- (init);
+% % \path [line, dashed] (Start2) -- (init);
+% % \path [line, dashed] (Start2) |- (init2);
+% % \end{tikzpicture}
 
-\begin{itemize}\compresslist
-\item Pellentesque eget orci eros. Fusce ultricies, tellus et pellentesque fringilla, ante massa luctus libero, quis tristique purus urna nec nibh. Phasellus fermentum rutrum elementum. Nam quis justo lectus.
-\item Vestibulum sem ante, hendrerit a gravida ac, blandit quis magna.
-\end{itemize}
+% %------------------------------------------------
 
-\end{multicols}
+% \begin{itemize}\compresslist
+% \item Pellentesque eget orci eros. Fusce ultricies, tellus et pellentesque fringilla, ante massa luctus libero, quis tristique purus urna nec nibh. Phasellus fermentum rutrum elementum. Nam quis justo lectus.
+% \item Vestibulum sem ante, hendrerit a gravida ac, blandit quis magna.
+% \end{itemize}
+
+% \end{multicols}
 }
 
 %----------------------------------------------------------------------------------------
@@ -205,7 +241,6 @@ Maecenas viverra ligula a risus blandit vel tincidunt est adipiscing. Suspendiss
 
 \headerbox{Using RADICAL-Pilot (RP)}{name=method,column=0,below=objectives,bottomaligned=conclusion}{ % This block's bottom aligns with the bottom of the conclusion block
 
-To use RP, one must first instantiate at least one Compute Unit and a Pilot; the Compute Unit represents the task to be executed, while the Pilot is the entity that reserves resources on the target machine and maintains communication with the user's script. Using the RP API, the Pilot is launched to the specified machine in order to be scheduled. Once scheduled, the Pilot instantiates the Agent, which receives and schedules the Compute Units appropriately.
 
 \begin{center}
 \includegraphics[width=0.7\linewidth]{rp_arch}
@@ -240,18 +275,30 @@ To use RP, one must first instantiate at least one Compute Unit and a Pilot; the
 }
 
 %----------------------------------------------------------------------------------------
-%	RESULTS 2
+%	RESULTS 2http://radicalensemblemd.readthedocs.org/en/latest/http://radicalensemblemd.readthedocs.org/en/latest/
 %----------------------------------------------------------------------------------------
 
-\headerbox{Who uses RADICAL-Cybertools?}{name=results2,column=1,below=objectives,bottomaligned=conclusion}{ % This block's bottom aligns with the bottom of the conclusion block
+\headerbox{Who uses the Cybertools?}{name=results2,column=1,below=objectives,bottomaligned=conclusion}{ % This block's bottom aligns with the bottom of the conclusion block
 
 A number of groups around the globe use RADICAL-Cybertools. Some of our current collaborators are:
+
+RADICAL-SAGA
+\begin{itemize}\compresslist
+\item Atlas Experiment
+\item Super Kamiokande
+\end{itemize}
+
+RADICAL-Pilot
+\begin{itemize}\compresslist
+\item Replica Exchange
+\item EnsembleMD Toolkit
+\end{itemize}
 
 
 
 % \begin{center}
 % \begin{tabular}{l l l}
-% \toprule
+% \toprulehttp://radicalensemblemd.readthedocs.org/en/latest/
 % \textbf{Treatments} & \textbf{Response 1} & \textbf{Response 2}\\
 % \midrule
 % Treatment 1 & 0.0003262 & 0.562 \\
