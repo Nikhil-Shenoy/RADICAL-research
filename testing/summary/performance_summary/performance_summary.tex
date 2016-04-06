@@ -11,13 +11,13 @@
 \date{\today}
 \maketitle
 
-\abstract{Modern software, no matter its application, always incorporates performance as a design factor. Without efficient algorithms and implementations, the software becomes less attractive to the user because it does not accomplish the user's tasks in a timely fashion. Such factors are seriously considered when designing software for scientific computing, as many simulations in areas such as molecular dynamics require efficient tools to process the ever-increasing amount of data. In this article, we discuss the EnsembleMD-Toolkit and benchmark the efficiency of two standard Patterns using a sample workload. We assume that the reader has a basic familiarity with the Toolkit, and we will define only parameters relevant to the performed experiments.}
+\abstract{Modern software, no matter its application, always incorporates performance as a design factor. Without efficient implementations, the software becomes less attractive to the user because it does not accomplish the user's tasks in a timely fashion. Such factors are seriously considered when designing software for scientific computing, as many simulations in areas such as molecular dynamics require efficient tools to process the ever-increasing amount of data. In this article, we discuss the EnsembleMD-Toolkit and benchmark the efficiency of two standard Patterns using a sample workload. We assume that the reader has a basic familiarity with the Toolkit, and we will define only parameters relevant to the performed experiments.}
 
 \section{Introduction}
 
-	Traditional distributed systems utilize batch queueing systems in order to schedule jobs to a high performance machine's resources. In such systems, scripts are written to execute several different tasks sequentially, and a scheduler assigns the tasks to the resources it requires. The problem with this approach is that since a task will most likely require only a fraction of the available resources, the remaining resources will stay idle. Leaving cores unutilized severely limits the efficiency and throughput of the system and must be avoided. Additionally, the total waiting time in the queue for a simulation can scale quickly in the number of component tasks, which can significantly increase the time to completion. These problems burden the user who, in many cases, is attempting to run computation-heavy scientific simulations.
+	Traditional distributed systems utilize batch queueing systems in order to schedule jobs to a high performance machine's resources. In such systems, scripts are written to execute several different tasks sequentially, and a scheduler assigns the tasks to the resources it requires. The problem with this approach is that since a task will most likely require only a fraction of the available resources, the remaining resources will stay idle. Leaving cores unutilized severely limits the efficiency and throughput of the system and must be avoided. Additionally, the total waiting time in the queue for a simulation can scale quickly in the number of component tasks, which can significantly increase the time to completion. These problems burden the user who, in many cases, is attempting to run computation-heavy scientific simulations \cite{vishal_shah_paper}.
 
-	To alleviate this problem, the concept of Pilot-Jobs was introduced. A pilot job is a special type of container designed to process and manage several different tasks during its lifetime. In a pilot scheme, information about each task of a simulation is associated with the pilot, and only the pilot is placed into the scheduling queue. Once the scheduler schedules the pilot, it then establishes communication with the user script and allows the user to directly schedule tasks to it for execution, provided that enough resources are available. The main advantage in using a pilot system is that one can circumvent the scheduler when running multiple tasks. By placing only the pilot into the scheduling queue, the user obviates the time necessary to request and assign resources for the total number of tasks. This can result in a decreased time-to-completion for each task, and high throughput of the number of tasks. More importantly, such a scheme leads to efficient usage of resources, as not only can a single pilot keep its assigned resources occupied for long periods of time, but a series of pilots can ensures that a large percentage of the entire grid's resources are kept busy. Since the submission of the pilot and its workload is decoupled from the assignment of resources, complex applications can be written to take advantage of all the resources in the system.
+	To alleviate this problem, the concept of Pilot-Jobs was introduced. A pilot job is a special type of container designed to process and manage several different tasks during its lifetime. In a pilot scheme, information about each task of a simulation is associated with the pilot, and only the pilot is placed into the scheduling queue. Once the scheduler schedules the pilot, it then establishes communication with the user script and allows the user to directly schedule tasks to it for execution, provided that enough resources are available. The main advantage in using a pilot system is that one can circumvent the scheduler when running multiple tasks. By placing only the pilot into the scheduling queue, the user obviates the time necessary to request and assign resources for the total number of tasks. This can result in a decreased time-to-completion for each task, and high throughput of the number of tasks. More importantly, such a scheme leads to efficient usage of resources, as not only can a single pilot keep its assigned resources occupied for long periods of time, but a series of pilots can ensures that a large percentage of the entire grid's resources are kept busy. Since the submission of the pilot and its workload is decoupled from the assignment of resources, complex applications can be written to take advantage of all the resources in the system \cite{rp_paper}.
 
 	Based on these advantages, the RADICAL-Cybertools group implemented RADICAL-Pilot, which is a Python API that provides user-friendly abstractions for the pilot model. By abstracting the pilot paradigm, one can use RADICAL-Pilot as a foundation for more complex use cases that require high performance machines. The EnsembleMD-Toolkit, an API designed for large scale molecular dynamics simulations, is a prime example of this, as it utilizes RADICAL-Pilot to implement simulations that are popular within the molecular dynamics community.
 
@@ -29,13 +29,13 @@
 			\begin{figure}[H]
 				\centering
 				\includegraphics[width=7cm,height=5cm]{diagrams/pipeline_pattern}
-				\caption{Block Diagram of the Pipeline Pattern}
+				\caption{Block Diagram of the Pipeline Pattern \cite{pipeline_pattern}}
 				\label{fig:pipeline_block_diagram}
 			\end{figure}
 
 			The Execution Context represents the distributed computing resource that the simulation is running on. It contains the infrastructure needed to interface with the machine itself, and is the agent that allows the Toolkit to adapt to and include a variety of resources. Its main functions are to allocate and deallocate the resource, as well as run an execution pattern on the resource. Aside from specifying which resource to use, the user does not interact with this component directly as it is meant to be behind the wall of abstraction. 
 
-			Finally, the Kernel Plugin represents the scientific tool to be used. This can be anything from molecular dynamics executables such as Amber to simple tasks such as counting the number of characters in a file. The Toolkit provides a list of built-in kernels, but provides a mechanism for users to add their own. The Kernel Plugin abstracts aspects of the tools that are specific to a particular resource and presents a uniform interface with the user can define tasks.
+			Finally, the Kernel Plugin represents the scientific tool to be used. This can be anything from molecular dynamics executables such as Amber to simple tasks such as counting the number of characters in a file. The Toolkit provides a list of built-in kernels, but provides a mechanism for users to add their own. The Kernel Plugin abstracts aspects of the tools that are specific to a particular resource and presents a uniform interface with the user can define tasks \cite{enmd_paper}.
 
 \section{Experiments}
 	\subsection{General Parameters}
@@ -119,14 +119,14 @@
 		\begin{figure}[H]
 			\centering
 			\includegraphics[scale=.15]{diagrams/enmd_state_model_mapping.jpg}
-			\caption{Mapping of parameters to pilot state model}
+			\caption{Mapping of parameters to pilot state model. Derived from \cite{rp_state_diagram}.}
 			\label{fig:param_pilot_state_mapping}
 		\end{figure}
 		We also map the recorded parameters to the global pilot state model in Figure ~\ref{fig:param_pilot_state_mapping}. This mapping holds for both the Pipeline and Simulation Analysis patterns, and shows how the measured components fit into the pilot paradigm.
 		\begin{figure}[H]
 			\centering
 			\includegraphics[scale=.3]{diagrams/pattern_and_rp_overheads.jpg}
-			\caption{EnMD and RP Overheads}
+			\caption{EnMD and RP Overheads. Derived from \cite{rp_state_diagram}.}
 			\label{fig:pattern_rp_overheads}
 		\end{figure}
 
@@ -148,12 +148,12 @@
 		% 	\end{minipage}
 		% \end{figure}
 
-		Figures ~\ref{fig:pattern_rp_overheads} details the measurements taken within the Execution Time state shown in Figure ~\ref{fig:param_pilot_state_mapping}. The start and stop times indicate when execution starts and ends for that particular stage. The wait time indicates when the stage submits all of its tasks and waits for them to finish. Finally, the res time is defined as the point when all tasks of that stage have finished execution and the EnMD Toolkit resumes execution to prepare for the next stage.
+		Figures ~\ref{fig:pattern_rp_overheads} details the measurements taken within the Execution Time state shown in Figure ~\ref{fig:param_pilot_state_mapping}. The start and stop times indicate when execution starts and ends for that particular stage. The wait time indicates when the stage submits all of its tasks and waits for them to finish. Finally, the res time is defined as the point when all tasks of that stage have finished execution and the EnMD Toolkit resumes execution to prepare for the next stage. The terms in the parenthesis, (step1/sim) and (step2/ana), do not indicate division; this notation is used to condense the Pipeline Overhead diagram and the Simulation Analysis Overhead diagram into one figure. In the Pipeline case, the diagrams would include the ``step1'' and ``step2'' terms, whereas the Simulation Analysis case would include the ``sim'' and ``ana'' terms.
 
 		% Pipeline Weak Scaling
 		\begin{figure}[H]
 			\centering
-			\includegraphics[scale=.30]{iteration_3/pipeline_weak_scaling.png}
+			\includegraphics[scale=.30]{img/pipeline_weak_scaling.png}
 			\caption{Weak Scaling with the Pipeline Pattern}
 			\label{fig:pipeline_weak_scaling}
 		\end{figure}
@@ -165,7 +165,7 @@
 
 		\begin{figure}[H]
 			\centering
-			\includegraphics[scale=.30]{iteration_3/pipeline_strong_scaling.png}
+			\includegraphics[scale=.30]{img/pipeline_strong_scaling.png}
 			\caption{Strong Scaling with the Pipeline Pattern}
 			\label{fig:pipeline_strong_scaling}
 		\end{figure}
@@ -227,10 +227,31 @@
 		In the Simulation phase, we find that the execution time has been reduced dramatically, and that a representative value for it could be 13ms. The Analysis phase also varies slightly, but can be approximated at 7ms.
 		The Data Movement durations are troubling, seeing as there is not a clear pattern to how the different values were obtained. The scaling does not seem to have had a visible effect on the duration of this phase.
 
+	\subsection{Reproducibility}
+		The experiments described in this paper can be reproduced easily. We enumerate the steps as follows:
+		\begin{enumerate}
+			\item Set up virtual environment on local machine using virtualenv tool.
+			\item Install the EnsembleMD Toolkit using the instructions found in the documentation (http://radicalensemblemd.readthedocs.org/en/ \\ stable/installation.html)
+			\item Acquire an account on the remote target machine. In this case, the target machine was XSEDE's Stampede.
+			\item Generate a free MongoDB instance using MongoLab (https://mlab.com/) and note its access URL.	
+			\item Modify the bag\_of\_tasks.py and the simulation\_analysis\_loop.py examples in radical.ensemblemd/examples folder. This includes changing the kernels to Makefile and CharacterCount and changing the size of the input file to 10Mb
+			\item For each core count in the scale [1,16,32,64,128], run the application at least four times. This allows the experimenter to verify the accuracy of his results.
+			\item Set the resource to the remote target machine for which you now have an account.
+			\item In the case of weak scaling, set the number of instances equal to the core count. In the case of strong scaling, set the number of instances to 1, but continue to alter the core count in the same way as in the weak scaling case.
+			\item Use Tmux or another terminal multiplexer to start the job on your machine. You can detach the job once EnsembleMD begins executing on the remote target machine. It is recommended to start the job at night, as it will be completed by the next morning.
+			\item If any errors occur while testing, remember to safely close and stop the EnsembleMD script. Also make sure that the requrested resources are not still associated with one's account on the remote machine. One can verify this by logging in to that machine and checking the job status.
+			\item Remember to run all jobs with the following environment variables:
+				\begin{itemize}
+					\item RADICAL\_ENMD\_VERBOSE=DEBUG
+					\item RADCIAL\_ENMD\_PROFILING=1
+					\item RADICAL\_PILOT\_DBURL= <your mongodb url>
+				\end{itemize}
+		\end{enumerate}
+
 \section{Conclusion}
 	This set of experiments were conducted to further understand the EnsembleMD Toolkit's scaling behavior. Based on the data from our experiments, we were able to identify trends that hinted at the Toolkit's capabilities for different core-task configurations. We considered stages of operation within the Toolkit that best exemplified its functionality; the Core Overhead, the Pattern Overhead, the RADICAL-Pilot Overhead, the Task Execution Time, and the Data Movement. While not all of these parameters showed distinct trends, we were able to glean information from a few of the parameters.
 
-	The Task Execution time, for both the Makefile and Character Count steps, were found to be relatively constant across most configurations. This behavior is expected, as the time required to execute a bash shell command should only change if different input is given to it. In our case, the kernels in each step are doing the exact same tasks in every configuration, so a change in the execution time would be troubling. Even though the execution time was constant, we noticed that it was much higher than the time the same tasks took when executed from the Bash command prompt. This indicates that there are additional RADICAL-Pilot and EnsembleMD wrappings around the Bash commands that increase the duration. While dissecting that overhead was not the goal of this experiment, wit is a candidate for future work.
+	The Task Execution time, for both the Makefile and Character Count steps, were found to be relatively constant across most configurations. This behavior is expected, as the time required to execute a bash shell command should only change if different input is given to it. In our case, the kernels in each step are doing the exact same tasks in every configuration, so a change in the execution time would be troubling. Even though the execution time was constant, we noticed that it was much higher than the time the same tasks took when executed from the Bash command prompt. This indicates that there are additional RADICAL-Pilot and EnsembleMD wrappings around the Bash commands that increase the duration. While dissecting that overhead was not the goal of this experiment, it is a candidate for future work.
 	Throughout all the experiments performed, we observed that the EnsembleMD Core Overhead stayed relatively constant over all configurations. This implies that users and developers can rely on the performance of the EnMD Core staying constant regardless of the tasks the user gives it.
 	
 	In almost all measurements of the EnMD Pattern Overhead, we found that its duration was on the order of milliseconds. This is useful to users because they can be assured that any preparation done by EnMD to before executing the task is very efficient and is not expected to hinder the completion of the task. For developers, this indicates that the Toolkit makes quick transitions between states in the flow of execution.
@@ -238,8 +259,28 @@
 
     In these experiments, we measured data movement as the time needed to download the output of our tasks from the remote machine to the local machine, seeing as all the input data was being generated on the remote machine. Both of the weak scaling cases showed that the time required for the data movement was directly proportional to the core/instance configuration. The Pipeline case seemed to imply a linear relationship between the variables, whlie the Simulation-Analysis case implied a more quadratic relationship. We have not investigated the relationship in detail, but determining such relationships would allow the user to restructure his application and explore the tradeoffs between effiency and data usage. Unfortunately, we were not able to notice distinct patterns in the strong scaling cases. We do believe that relationships similar to the ones suggested by the weak scaling experiments do exist, but further testing would be required to find them.
 
-
 \section{Future Work}
-	Performance testing is an ongoing body of work in any scientific experiment, and the results presented here can be extended into many different directions. First, one could examine the relationship between the time taken to process varying sizes of data and the number of cores given to process that data. Such information would be useful in gauging EnsembleMD's capability to handle large and small amounts of data. The same experiments could be run on all the high performance machines supported by the Toolkit, with the expectation that the user gets similar performance no matter which machine he uses. Next, one could consider the Toolkit's role in data movement; in these experiments, we considered only the Toolkit's involvement in transfers between the local and remote machine. An interesting avenue to explore would be the duration of all the operations and changes that the Toolkit makes to the data while it is on the remote node but not being processed. This, combined with this article's measurment of local/remote transfers, may better reflect the overhead incurred by data movement. Finally, discovery of best-fit functions for the important components of the Toolkit, such as the Pattern Overhead, RP Overhead, and Data Movement, would characterize the Toolkit in an easy-to-use way. The benefit of using a simple function to approximate the behavior of a Toolkit component would provide the user with instant information on how to structure his application, leading to increased usability.
+	Performance testing is an ongoing body of work in any scientific experiment, and the results presented here can be extended into any different directions. First, one could examine the relationship between the time taken to process varying sizes of data and the number of cores given to process that data. Such information would be useful in gauging EnsembleMD’s capability to handle large and small amounts of data. The same experiments could be run on all the high performance machines supported by the Toolkit, with the expectation that the user gets similar performance no matter which machine he uses. Next, one could consider the Toolkit’s role in data movement; in these experiments, we considered only the Toolkit’s involvement in transfers between the local and remote machine. An interesting avenue to explore would be the duration of all the operations and changes that the Toolkit makes to the data while it is on the remote node but not being processed. This, combined with this article’s measurment of local/remote transfers, may better reflect the overhead incurred by data movement. Finally, discovery of best-fit functions for the important components of the Toolkit, such as the Pattern Overhead, RP Overhead, and Data Movement, would characterize the Toolkit in an easy-to-use way. The benefit of using a simple function to approximate the behavior of a Toolkit component would provide the user with instant information on how to structure his application, leading to increased usability.
 
+\section{Lessons Learned}
+	Analyzing the performance of a system can lead to many insights about the system, and about the attitude with which one approaches experimentation in general. During my experience with testing the EnsembleMD Toolkit, I learned a variety of concepts which I believe have improved my abilities as a researcher.
+
+	One of the most important concepts I learned about is careful design of experiments. At the beginning of my experimentation, I  had a tendency to dive into the data head first without a solid plan for what I was measuring. I tried to find relationships between every pair of variables in the data set, but I soon learned that this was much too inefficient to produce good results. In many of those tests, the relations I found did not yield any useful information about the system, which rendered all the time I spent running those simulations useless. Not only would these types of experiments not produce results, but adding just one variable would dramatically increase the complexity of running the entire set of simulations. After this experiment, I learned to focus on specific behaviors of the system I wanted to examine, such as strong scaling, and tailored my experiments towards those. This resulted in concise, informative results that provided useful information for the development team.
+
+	I also understood the importance of reproducibility of experiments. Providing the parameters to reproduce an experiment allows me to go back to my experiment after some time and still expect to have the same results. Also, others can look at my work, run the same experiment, and verify whether my interpretation of the data is valid. In the greater scientific community, reproducibility allows a scientist to test the foundations on which his current experiment is based. If he thinks his experiment went wrong based on work done by others, he can go and re-run the experiment to either verify or change his assumptions. Sometimes the initial interpretation of the results was wrong, and another trial yielded a more significant, appropriate result. This allows the community to make sure that the assumptions from previous experiments are a solid foundation upon which new work can be done.
+
+	Adapting existing code to my experiments improved my skills as a developer and widened my knowledge of EnsembleMD and the rest of the RADICAL Cybertools stack. In the all the projects I had done before joining the group, I was required to implement all functionality from scratch, which augmented my understanding of class concepts but did not reflect real software development. In designing my experiments, I was forced to look at code written by others, understand it, and adapt it to my work. As I read, I understood why layers of abstraction were implemented between components of the Toolkit, and between layers of the RADICAL Cybertools stack. My view of the system changed from a collection of disjoint Pilot operations into a series of well-defined state transitions.	Learning about the architecture in this way gave my experiments more context, and allowed me to remove measurements which didn't capture the interactions between important components. 
+
+
+	Finally, I gained a greater appreciation for reading technical papers. I read a variety of papers written by RADICAL developers and other members of the community, I understood that impactful papers require careful design in order to be useful. In specific, the specific sections of a paper must have a clear focus and a proper transition into the following section. I especially noticed how important the introduction and background are in setting the context for the experiment. If carefully crafted, then the user will be more willing to read the rest of the paper and understand why one's work is so important. The sections describing the experiment must be detailed, yet concise. It is best to include only enough information to reproduce the experiment and explain why the work is being done; any more information could cause the reader to become confused and lose sight of the experiment's purpose. Finally, the analysis and conclusion should bridge the context laid out in the opening sections and the results from the experiment to summarize the impact of the work. While many essays and other pieces of writing do a have a similar structure, I was able to learn how the scientific community adapted that structure to fit its needs and present its work to the world. Going forward, I can make use of this in order to make my own contributions.
+
+
+% Using no_cite to make sure all the bib entries are processed
+\nocite{pstar}
+% \nocite{rp_paper}
+\nocite{saga_paper}
+% \nocite{vishal_shah_paper}
+
+\bibliography{performance_summary}{}
+\bibliographystyle{ieeetr}		
 \end{document}
