@@ -1,0 +1,4 @@
+update/complete citations
+3rd person 1st person consistency (Lessons Learned) - Done
+Latex typos in section 4 - Done
+Github URL for the code in the Reproducibility section - Done
