@@ -1,7 +1,9 @@
-\documentclass[]{article}
-\usepackage{graphicx,array,tabu,subcaption,float,glossaries,url}
+ \documentclass[]{article}
+\usepackage{graphicx,array,tabu,subcaption,float,glossaries,url,amsmath}
+\usepackage{geometry}
+\geometry{a4paper,portrait, margin=1in}
 \usepackage[T1]{fontenc}
-% \usepackage{tabu}
+\newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
 \graphicspath{{/home/shenoy/Documents/Nikhil/research/RADICAL-research/testing/summary/}}
 
 \begin{document}
@@ -16,9 +18,12 @@
 
 	Traditional distributed systems utilize batch queueing systems in order to schedule jobs to a high performance machine's resources. In such systems, scripts are written to execute several different tasks sequentially, and a scheduler assigns the tasks to the resources it requires. The problem with this approach is that since a task will most likely require only a fraction of the available resources, the remaining resources will stay idle. Leaving cores unutilized severely limits the efficiency and throughput of the system and must be avoided. Additionally, the total waiting time in the queue for a simulation can scale quickly in the number of component tasks, which can significantly increase the time to completion. These problems burden the user who, in many cases, is attempting to run computation-heavy scientific simulations \cite{vishal_shah_paper}.
 
-	To alleviate this problem, the concept of Pilot-Jobs was introduced. A pilot job is a special type of container designed to process and manage several different tasks during its lifetime. In a pilot scheme, information about each task of a simulation is associated with the pilot, and only the pilot is placed into the scheduling queue. Once the scheduler schedules the pilot, it instantiates an agent that pulls information about the tasks to execute from the MongoDB. Provided that enough resources are available, those tasks are then executed. The main advantage in using a pilot system is that one can circumvent the scheduler when running multiple tasks. By placing only the pilot into the scheduling queue, the user obviates the time necessary to request and assign resources for the total number of tasks. This can result in a decreased time-to-completion for each task, and high throughput of the number of tasks. More importantly, such a scheme leads to efficient usage of resources, as not only can a single pilot keep its assigned resources occupied for long periods of time, but a series of pilots can keep a large portion of the entire grid's resources busy. Since the submission of the pilot and its workload is decoupled from the assignment of resources, complex applications can be written to take advantage of all the resources in the system \cite{rp_paper}.
+	To alleviate this problem, the concept of Pilot-Jobs was introduced. In a pilot scheme, information about each task of a multi-task simulation is associated with the pilot, and only the pilot is placed into the scheduling queue. Once the pilot is scheduled to a machine, it can then request and execute multiple tasks on its assigned resources. By placing only the pilot into the scheduling queue, the user circumvents the scheduler and obviates the time necessary to request and assign resources for the total number of tasks. This can result in a decreased time-to-completion for each task, and high throughput of the number of tasks \cite{rp_paper}.
 
-	Based on these advantages, the RADICAL-Cybertools group developed RADICAL-Pilot, which is a Python API that provides user-friendly abstractions for the pilot model. By abstracting the pilot paradigm, one can use RADICAL-Pilot as a foundation for more complex use-cases that require high performance machines. The EnsembleMD-Toolkit, an API designed for large scale molecular dynamics simulations, is a prime example of this, as it utilizes RADICAL-Pilot to implement simulations that are popular within the molecular dynamics community.
+	The RADICAL-Cybertools group implemented RADICAL-Pilot API as an instance of a Pilot Job system, and it can be used as a standalone software package. However, the group has also used it as a platform to develop software for different scientific use cases. The Replica Exchange, ExTASY, and EnsembleMD Toolkit are all examples of packages that utilize RADICAL-Pilot in the backend to execute simulations. Using the pilot paradigm as a platform for high performance science provides developers with a unique type of abstraction; all of the information regarding scheduling, queueing, resource management, and communication has been completely abstracted from the user. The EnsembleMD-Toolkit, an API designed for large scale molecular dynamics simulations, is a prime example of this, as it utilizes RADICAL-Pilot to implement simulations that are popular within the molecular dynamics community. Making the EnsembleMD Toolkit a client to RADICAL-Pilot in the architecture allows the client scientist to focus entirely on the science at hand rather than the intricacies of distributed systems, since they are all hidden from the user. From the perspective of an EnsembleMD developer, generating new application patterns and kernels for the Toolkit becomes much easier since the mechanism for job submission and management is decoupled from the logic of the use cases. Thus, both clients and developers of the EnsembleMD software can meet the demands of expedient execution of simulations as well as extensibility and continued development of the software.
+
+	However, constructing this architecture is not enough. If a client is looking for optimal performance out of a system, he must be aware of all the different components and their behaviour under varied conditions before determining whether the system is useful to him. For this reason it is important to construct accurate performance profiles for software like EnsembleMD, as its utility depends on its ability to perform well at large scales. Factors that must be considered when designing such a profile include the costs of communication between nodes and other entities, the volume of data that can be transferred, the overall time-to-completion, and the overheads incurred by each component. Analyzing these components allows a developer to identify bottlenecks in the system and work to fix them in order to make the software more attractive to the user. In this paper, we examine the performance of the EnsembleMD Toolkit in the hope of constructing a comprehensive profile. To do this, we examine the various components of the software under a set workload.
+
 
 		\subsection{Ensemble-MD Toolkit} 
 			In this article, we present the EnsembleMD Toolkit (EnMD) as one of the complex applications built on top of the RADICAL-Pilot architecture, and provide a brief overview of the software here. The execution flow of the Toolkit is centered around three main components; the Application Pattern, the Execution Context, and the Kernel Plugin. 
@@ -38,10 +43,10 @@
 
 			Finally, the Kernel Plugin represents the scientific tool to be used. This can be anything from molecular dynamics executables such as Amber to simple tasks such as counting the number of characters in a file. The Toolkit provides a list of built-in kernels, but provides a mechanism for users to add their own. The Kernel Plugin abstracts aspects of the tools that are specific to a particular resource and presents a uniform interface with the user can define tasks \cite{enmd_paper}.
 
-			Using this three basic components, EnsembleMD is able to characterize biological phenomena and run simulations specific to those phenomena. However, recent efforts in the development of the Toolkit have led to applications in astronomy, specifically in monitoring the \textit{movement of galaxies} (not sure about this bit). The abstractions for biological phenomena provided by the Toolkit are thus shown to not only be effective for those types of simulations, but can also be extended to fit other science applications as well.
+			Using this three basic components, EnsembleMD is able to characterize biological phenomena and run simulations specific to those phenomena. However, recent efforts in the development of the Toolkit have led to applications in astronomy, specifically in monitoring the \textit{movement of galaxies}. The abstractions for biological phenomena provided by the Toolkit are thus shown to not only be effective for those types of simulations, but can also be extended to fit other science applications as well.
 
 \section{Experiments}
-		The performance experiments described in this section were designed to analyze the Pipeline and Simulation Analysis Patterns. We define the experiment configuration key equations, and explain useful diagrams here.
+		The performance experiments described in this section were designed to analyze the Pipeline and Simulation Analysis Patterns. We define the experiment configuration key align*s, and explain useful diagrams here.
 
 		The experiment is comprised of a two-stage workload; the first stage consists of creating a 10Mb file of random characters, and the second stage performs a character count on this file. In Table 1, we have included the commands used to execute each stage as well as the average execution time from the Bash Shell. We also use the environment parameters specified in Table 2.
 
@@ -118,34 +123,63 @@
 
 		Each of the components exhibited in Figure ~\ref{fig:param_pilot_state_mapping} is governed differences in timestamps. The following equations explicitly describe those differences.
 
-		\begin{equation}
-			EnMD Core Overhead = (alloc\_stop - alloc\_start) + (dealloc\_stop - dealloc\_start)
-		\end{equation}
+		\begin{align*}
+			EnMD Core Overhead = (alloc\_stop - alloc\_start) + (dealloc\_stop - dealloc\_start) \numberthis \label{1}
+		\end{align*}
 
-		\begin{equation}
-			EnMD Pattern Overhead = (step1\_wait-step1\_start) + (step1\_stop - step1\_res) + (step1\_wait-step1\_start) + (step1\_stop - step1\_res)
-		\end{equation}
+		\begin{align*}
+			EnMD Pattern Overhead = &(step1\_wait-step1\_start) + (step1\_stop - step1\_res) + \numberthis \label{2} \\
+									&(ana\_wait-ana\_start) + (ana\_stop - ana\_res) 
+		\end{align*}
 
-		\begin{equation}
-			RADICAL-Pilot Overhead = ((step1\_wait - step1\_res) - step1\_data\_movement - step1\_execution\_time) + ((step2\_wait - step2\_res) - step2\_data\_movement - step2\_execution\_time)
-		\end{equation}
+		\begin{align*}
+			RP Overhead = &((step1\_wait - step1\_res) - step1\_data\_movement - step1\_execution\_time) + \\ \numberthis \label{3} 
+						  &((ana\_wait - ana\_res) - ana\_data\_movement - ana\_execution\_time) 
+		\end{align*}
 
-		\begin{equation}
-			Data Movement = ((step1\_Done - step1\_PendingAgentOutputStaging) + (step1\_Allocating - step1\_StagingInput)) + ((step2\_Done - step2\_PendingAgentOutputStaging) + (step2\_Allocating - step2\_StagingInput))
-		\end{equation}
+		\begin{align*}
+			Data Movement = &((step1\_Done - step1\_PendingAgentOutputStaging) + \\
+							&(step1\_Allocating - step1\_StagingInput)) + \numberthis \label{4} \\
+							&((ana\_Done - ana\_PendingAgentOutputStaging) + \\
+							&(ana\_Allocating - ana\_StagingInput)) 
+		\end{align*}
 		
-		\begin{equation}
-			Step 1 Execution Time = PendingAgentOutputStaging - Executing
-		\end{equation}
+		\begin{align*}
+			Step 1 Execution Time = PendingAgentOutputStaging - Executing \numberthis \label{5}
+		\end{align*}
 
-		\begin{equation}
-			Step 2 Execution Time = PendingAgentOutputStaging - Executing
-		\end{equation}
+		\begin{align*}
+			Step 2 Execution Time = PendingAgentOutputStaging - Executing \numberthis \label{6}
+		\end{align*}
+
+		\begin{align*}
+			EnMD Pattern Overhead = &(sim\_wait-sim\_start) + (sim\_stop - sim\_res) + \numberthis \label{7} \\
+									&(ana\_wait-ana\_start) + (ana\_stop - ana\_res) 
+		\end{align*}
+
+		\begin{align*}
+			RP Overhead = &((sim\_wait - sim\_res) - sim\_data\_movement - sim\_execution\_time) + \\ \numberthis \label{8} 
+						  &((ana\_wait - ana\_res) - ana\_data\_movement - ana\_execution\_time) 
+		\end{align*}
+
+		\begin{align*}
+			Data Movement = &((sim\_Done - sim\_PendingAgentOutputStaging) + \\
+							&(sim\_Allocating - sim\_StagingInput)) + \numberthis \label{9} \\
+							&((ana\_Done - ana\_PendingAgentOutputStaging) + \\
+							&(ana\_Allocating - ana\_StagingInput)) 
+		\end{align*}
+		
+		\begin{align*}
+			Simulation Execution Time = PendingAgentOutputStaging - Executing \numberthis \label{10}
+		\end{align*}
+
+		\begin{align*}
+			Analysis Execution Time = PendingAgentOutputStaging - Executing \numberthis \label{11}
+		\end{align*}
 
 
 
-
-		Figures ~\ref{fig:pattern_rp_overheads} details the measurements taken within the Execution Time state shown in Figure ~\ref{fig:param_pilot_state_mapping}. The start and stop times indicate when execution starts and ends for that particular stage. The wait time indicates when the stage submits all of its tasks and waits for them to finish. Finally, the res time is defined as the point when all tasks of that stage have finished execution and the EnMD Toolkit resumes execution to prepare for the next stage. The terms in the parenthesis, (step1/sim) and (step2/ana), do not indicate division; this notation is used to condense the Pipeline Overhead diagram and the Simulation Analysis Overhead diagram into one figure. In the Pipeline case, the diagrams would include the ``step1'' and ``step2'' terms, whereas the Simulation Analysis case would include the ``sim'' and ``ana'' terms.
+		Figures ~\ref{fig:pattern_rp_overheads} details the measurements taken within the Execution Time state shown in Figure ~\ref{fig:param_pilot_state_mapping}. The start and stop times indicate when execution starts and ends for that particular stage. The wait time indicates when the stage submits all of its tasks and waits for them to finish. Finally, the ``res time'' is defined as the point when all tasks of that stage have finished execution and the EnMD Toolkit resumes execution to prepare for the next stage. The terms in the parenthesis, (step1/sim) and (ana/ana), do not indicate division; this notation is used to condense the Pipeline Overhead diagram and the Simulation Analysis Overhead diagram into one figure. In the Pipeline case, the diagrams would include the ``step1'' and ``ana'' terms, whereas the Simulation Analysis case would include the ``sim'' and ``ana'' terms. Similarly, we defined separate but very similar equations to measure the components; equations 2 thorugh 6 are specific to the Pipeline pattern, whereas equations 7 through 11 are specific to the Simulation-Analysis pattern.
 
 		\begin{figure}[H]
 			\centering
@@ -160,36 +194,36 @@
 		In each script, we measured the time taken to complete various stages of execution. These will be elaborated upon in the subsection for each pattern.
 
 	\subsection{Pipeline}
-		For the Pipeline pattern, we measured the parameters defined in Table 3. 
+		For the Pipeline pattern, we measured the parameters defined in equations 2 through 6. 
 
-		% Pipeline Definitions
-		\begin{table}[H]
-		\centering
-			\begin{tabular}{|c|p{10cm}|}
-				\hline
-				Parameter & Definition  \\
-				\hline
-				EnMD Core Overhead & (alloc\_stop-alloc\_start) +  (dealloc\_stop-dealloc\_start) \\
-				\hline
-				EnMD Pattern Overhead & ((step1\_wait-step1\_start) + (step1\_stop-step1\_res)) + \\ 
-									  &	(step2\_wait-step2\_start) + (step2\_stop-step2\_res)) \\
-				\hline
-				RP Overhead & ((step1\_wait-step1\_res) - step1\_data\_movement - step1\_execution\_time) + \\
-							&	((step2\_wait-step2\_res) - step2\_data\_movement - step2\_execution\_time) \\
-				\hline
-				Step 1 Execution Time & PendingAgentOutputStaging - Executing \\
-				\hline
-				Step 2 Execution Time & PendingAgentOutputStaging - Executing \\
-				\hline
-				Data Movement Time & ((step1\_Done - step1\_PendingAgentOutputStaging) + \\ 
-								   &	(step1\_Allocating - step1\_StagingInput)) + \\
-								   &	((step2\_Done - step2\_PendingAgentOutputStaging) + \\
-								   &	(step2\_Allocating - step2\_StagingInput)) \\
-				\hline
-			\end{tabular}
-			\caption{Pipeline Definitions}
-			\label{table:pipeline_definitions}
-		\end{table}
+		% % Pipeline Definitions
+		% \begin{table}[H]
+		% \centering
+		% 	\begin{tabular}{|c|p{10cm}|}
+		% 		\hline
+		% 		Parameter & Definition  \\
+		% 		\hline
+		% 		EnMD Core Overhead & (alloc\_stop-alloc\_start) +  (dealloc\_stop-dealloc\_start) \\
+		% 		\hline
+		% 		EnMD Pattern Overhead & ((step1\_wait-step1\_start) + (step1\_stop-step1\_res)) + \\ 
+		% 							  &	(ana\_wait-ana\_start) + (ana\_stop-ana\_res)) \\
+		% 		\hline
+		% 		RP Overhead & ((step1\_wait-step1\_res) - step1\_data\_movement - step1\_execution\_time) + \\
+		% 					&	((ana\_wait-ana\_res) - ana\_data\_movement - ana\_execution\_time) \\
+		% 		\hline
+		% 		Step 1 Execution Time & PendingAgentOutputStaging - Executing \\
+		% 		\hline
+		% 		Step 2 Execution Time & PendingAgentOutputStaging - Executing \\
+		% 		\hline
+		% 		Data Movement Time & ((step1\_Done - step1\_PendingAgentOutputStaging) + \\ 
+		% 						   &	(step1\_Allocating - step1\_StagingInput)) + \\
+		% 						   &	((ana\_Done - ana\_PendingAgentOutputStaging) + \\
+		% 						   &	(ana\_Allocating - ana\_StagingInput)) \\
+		% 		\hline
+		% 	\end{tabular}
+		% 	\caption{Pipeline Definitions}
+		% 	\label{table:pipeline_definitions}
+		% \end{table}
 
 		
 		% Pipeline Weak Scaling
@@ -217,46 +251,20 @@
 
 	\subsection{Simulation Analysis}
 
-		For Simulation Analysis, we considered the definitions in Table 4.
+		For Simulation Analysis, we considered the parameter definitions in equations 7 through 11.
 
-		\begin{table}[H]
-			\centering
-			\begin{tabular}{|c|p{10cm}|}
-				\hline
-				Parameter & Definition  \\
-				\hline
-				EnMD Core Overhead & (alloc\_stop-alloc\_start) +  (dealloc\_stop-dealloc\_start) \\
-				\hline
-				EnMD Pattern Overhead & ((sim\_wait-sim\_start) + (sim\_stop-sim\_res)) + \\ 
-									  &	((ana\_wait-ana\_start) + (ana\_stop-ana\_res)) \\
-				\hline
-				RP Overhead & ((sim\_wait-sim\_res) - sim\_data\_movement - sim\_execution\_time) + \\
-							&	((ana\_wait-ana\_res) - ana\_data\_movement - ana\_execution\_time) \\
-				\hline
-				Simulation Execution Time & PendingAgentOutputStaging - Executing \\
-				\hline
-				Analysis Execution Time & PendingAgentOutputStaging - Executing \\
-				\hline
-				Data Movement Time & ((sim\_Done - sim\_PendingAgentOutputStaging) + \\ 
-								   &	(sim\_Allocating - sim\_StagingInput)) + \\
-								   &	((ana\_Done - ana\_PendingAgentOutputStaging) + \\
-								   &	(ana\_Allocating - ana\_StagingInput)) \\
-				\hline
-			\end{tabular}
-			\caption{Simulation Analysis Definitions}
-			\label{table:sa_definitions}
-		\end{table}
+		\begin{samepage}
+			\begin{figure}[H]
+				\centering
+				\includegraphics[scale=.29]{iteration_3/sa_weak_scaling.png}
+				\caption{Weak Scaling with the Simulation Analysis Pattern}
+				\label{fig:sa_weak_scaling}
+			\end{figure}
 
-		\begin{figure}[H]
-			\centering
-			\includegraphics[scale=.30]{iteration_3/sa_weak_scaling.png}
-			\caption{Weak Scaling with the Simulation Analysis Pattern}
-			\label{fig:sa_weak_scaling}
-		\end{figure}
-
-		In Figure ~\ref{fig:sa_weak_scaling}, we see scaling behavior similar to what we saw in the original pipeline weak scaling experiment. The EnsembleMD Core Overhead is essentially constant, the Pattern Overhead is small in comparison and is capped at around 5 seconds, and the RP overhead does show an increase across the combinations. However, the RADICAL-Pilot overhead does not show a distinct linear progression in the same fashion as the Pipeline Weak Scaling plot did. 
-		The second plot shows the phases of execution of the experiment. The pre-loop phase contained no logic, so our inference is that the times shown are the overhead introduced to make the call to the pre-loop. The Simulation execution time, which contained the Makefile Kernel, was constant throughout the scaling, but took longer on average than it did for the Pipeline. The Character Count, encapsulated by the Analysis stage, was truer to the values recorded in the Pipeline Weak Scaling plot.
-		The Data movement plot shows a similar increase in the time needed to download the output data, but the trend does not seem to be linear. 
+			In Figure ~\ref{fig:sa_weak_scaling}, we see scaling behavior similar to what we saw in the original pipeline weak scaling experiment. The EnsembleMD Core Overhead is essentially constant, the Pattern Overhead is small in comparison and is capped at around 5 seconds, and the RP overhead does show an increase across the combinations. However, the RADICAL-Pilot overhead does not show a distinct linear progression in the same fashion as the Pipeline Weak Scaling plot did. 
+			The second plot shows the phases of execution of the experiment. The pre-loop phase contained no logic, so our inference is that the times shown are the overhead introduced to make the call to the pre-loop. The Simulation execution time, which contained the Makefile Kernel, was constant throughout the scaling, but took longer on average than it did for the Pipeline. The Character Count, encapsulated by the Analysis stage, was truer to the values recorded in the Pipeline Weak Scaling plot.
+			The Data movement plot shows a similar increase in the time needed to download the output data, but the trend does not seem to be linear. 
+		\end{samepage}
 
 		\begin{figure}[H]
 			\centering
@@ -272,11 +280,12 @@
 	\subsection{Reproducibility}
 		The experiments described in this paper can be reproduced easily; all code for this work is located at \url{https://github.com/Nikhil-Shenoy/RADICAL-research/tree/master/testing/summary}. We enumerate the steps as follows:
 		\begin{enumerate}
-			\item Set up virtual environment on local machine using virtualenv tool.
-			\item Install the EnsembleMD Toolkit using the instructions found in the documentation (http://radicalensemblemd.readthedocs.org/en/ \\ stable/installation.html)
+			\item Set up virtual environment on local machine using \url{virtualenv} tool.
+			\item Install the EnsembleMD Toolkit using the instructions found in the documentation at: \\
+				  \url{http://radicalensemblemd.readthedocs.org/en/stable/installation.html}
 			\item Acquire an account on the remote target machine. In this case, the target machine was XSEDE's Stampede.
-			\item Generate a free MongoDB instance using MongoLab (https://mlab.com/) and note its access URL.	
-			\item Modify the bag\_of\_tasks.py and the simulation\_analysis\_loop.py examples in radical.ensemblemd/examples folder. This includes changing the kernels to Makefile and CharacterCount and changing the size of the input file to 10Mb
+			\item Generate a free MongoDB instance using MongoLab (\url{https://mlab.com/}) and note its access URL.	
+			\item Modify the \url{bag_of_tasks.py} and the \url{simulation_analysis_loop.py} examples in the \url{radical.ensemblemd/examples} folder. This includes changing the kernels to Makefile and CharacterCount and changing the size of the input file to 10Mb
 			\item For each core count in the scale [1,16,32,64,128], run the application at least four times. This allows the experimenter to verify the accuracy of his results.
 			\item Set the resource to the remote target machine for which you now have an account.
 			\item In the case of weak scaling, set the number of instances equal to the core count. In the case of strong scaling, set the number of instances to 1, but continue to alter the core count in the same way as in the weak scaling case.
@@ -302,7 +311,7 @@
     In these experiments, we measured data movement as the time needed to download the output of our tasks from the remote machine to the local machine, seeing as all the input data was being generated on the remote machine. Both of the weak scaling cases showed that the time required for the data movement was directly proportional to the core/instance configuration. The Pipeline case seemed to imply a linear relationship between the variables, whlie the Simulation-Analysis case implied a more quadratic relationship. We have not investigated the relationship in detail, but determining such relationships would allow the user to restructure his application and explore the tradeoffs between effiency and data usage. Unfortunately, we were not able to notice distinct patterns in the strong scaling cases. We do believe that relationships similar to the ones suggested by the weak scaling experiments do exist, but further testing would be required to find them.
 
 \section{Future Work}
-	Performance testing is an ongoing body of work in any scientific experiment, and the results presented here can be extended into any different directions. First, one could examine the relationship between the time taken to process varying sizes of data and the number of cores given to process that data. Such information would be useful in gauging EnsembleMD\textquotesingle s capability to handle large and small amounts of data. The same experiments could be run on all the high performance machines supported by the Toolkit, with the expectation that the user gets similar performance no matter which machine he uses. Next, one could consider the Toolkit\textquotesingle s role in data movement; in these experiments, we considered only the Toolkit\textquotesingle s involvement in transfers between the local and remote machine. An interesting avenue to explore would be the duration of all the operations and changes that the Toolkit makes to the data while it is on the remote node but not being processed. This, combined with this article\textquotesingle s measurment of local/remote transfers, may better reflect the overhead incurred by data movement. Finally, discovery of best-fit functions for the important components of the Toolkit, such as the Pattern Overhead, RP Overhead, and Data Movement, would characterize the Toolkit in an easy-to-use way. The benefit of using a simple function to approximate the behavior of a Toolkit component would provide the user with instant information on how to structure his application, leading to increased usability.
+	Performance testing is an ongoing body of work in any scientific experiment, and the results presented here can be extended into any different directions. First, one could examine the relationship between the time taken to process varying sizes of data and the number of cores given to process that data. Such information would be useful in gauging EnsembleMD`s capability to handle large and small amounts of data. The same experiments could be run on all the high performance machines supported by the Toolkit, with the expectation that the user gets similar performance no matter which machine he uses. Next, one could consider the Toolkit`s role in data movement; in these experiments, we considered only the Toolkit`s involvement in transfers between the local and remote machine. An interesting avenue to explore would be the duration of all the operations and changes that the Toolkit makes to the data while it is on the remote node but not being processed. This, combined with this article`s measurment of local/remote transfers, may better reflect the overhead incurred by data movement. Finally, discovery of best-fit functions for the important components of the Toolkit, such as the Pattern Overhead, RP Overhead, and Data Movement, would characterize the Toolkit in an easy-to-use way. The benefit of using a simple function to approximate the behavior of a Toolkit component would provide the user with instant information on how to structure his application, leading to increased usability.
 
 \section{Lessons Learned}
 	Analyzing the performance of a system can lead to many insights about the system, and about the attitude with which one approaches experimentation in general. During our experience with testing the EnsembleMD Toolkit, we learned a variety of concepts which we believe have improved our abilities as researchers.
