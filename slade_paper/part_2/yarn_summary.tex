@@ -1,4 +1,4 @@
- \documentclass[]{article}
+\documentclass[]{article}
 \usepackage{graphicx,array,tabu,subcaption,float,glossaries,url,amsmath}
 \usepackage{geometry}
 \geometry{a4paper,portrait, margin=1in}
@@ -7,7 +7,7 @@
 \graphicspath{{/home/shenoy/Documents/Nikhil/research/RADICAL-research/slade_paper/img/}}
 
 \begin{document}
-\title{Performance Summary of RADICAL-Pilot YARN}
+\title{Performance Summary of RADICAL-Pilo-YARN}
 \author{Nikhil Shenoy}
 \date{\today}
 \maketitle
@@ -26,9 +26,23 @@
 
 	This method of scheduling tasks provides many advantages, one of which is circumventing the scheduler. In current submission scenarios, each task must occupy a place in the scheduling queue and must individually wait for the required resources to become available before executing. This greatly increases the total time spent in the queue for the collection of tasks, which also increases the time to completion. However, Pilots allow users to avoid this time penalty by taking advantage of late binding and sending only the Pilot through the scheduler, reducing the wait time to that of a single task. Once the Pilot is finally scheduled, the user can then employ the various execution styles provided by the API based on the nature of their application. For example, if the batch is split into two types of tasks where one must occur before the other, the API provides functionality to schedule and execute such chained tasks. This, and the other options provided by RADICAL-Pilot, presents the user with a simple but powerful interface for task execution that outstrips current methods. By permitting any executable to be associated with a task in a Pilot, the RADICAL-Pilot API is flexible enough to handle a variety of HPC tasks, making it ideal for users who regularly work on the order of thousands of simulations.
 
-	While RADICAL-Pilot offers an improvement in efficiency for HPC tasks, it is not designed to handle data-intensive tasks. However, Apache Hadoop and YARN are able to work on problems involving large amounts of data. YARN in particular plays the roles of resource manager and scheduler in this context, and contributes the main functionality for wrestling with large volumes of data \cite{apache_hadoop_yarn}. RADICAL-Pilot has been extended with YARN in order present an iterface which has performs well on HPC and data-intensive tasks. The extension has been implemented at the level of RADICAK-Pilot's Agent, the entity responsible for coordinating execution on the remote machine, within several components. The Local Resource Manager now retrieves new environment variables that detail the number of cores to be used on each node and the assignment of nodes, among other parameters. It then passes this information on to the newly started Hadoop and YARN demons, which examine and record the current state of the cluster. The RADICAL-Pilot scheduler has also been updated to include information about the current state of the cluster, including updates on the total memory available and the total number of cores in use. The scheduler then uses this state information to schedule the next task appropriately. Finally, the Application Manager, which handles the resource allocations, works with the YARN Resource Manager in order to coordinate the execution of tasks. RADICAL-Pilot provisions a Compute Unit with a Description that contains the resource requirements, and then requests that YARN create a container for it. By placing the Compute Unit within the YARN container, the YARN scheduler can then easily assign the container the optimal resources for execution \cite{hadoop_paper}. 
+	While RADICAL-Pilot offers an improvement in efficiency for HPC tasks, it is not designed to handle data-intensive tasks. However, Apache Hadoop and YARN are able to work on problems involving large amounts of data. YARN in particular plays the roles of resource manager and scheduler in this context, and contributes the main functionality for wrestling with large volumes of data \cite{apache_hadoop_yarn}. RADICAL-Pilot has been extended with YARN in order present an iterface which has performs well on HPC and data-intensive tasks. The extension has been implemented at the level of RADICAK-Pilot's Agent, the entity responsible for coordinating execution on the remote machine, within several components. The Local Resource Manager now retrieves new environment variables that detail the number of cores to be used on each node and the assignment of nodes, among other parameters. It then passes this information on to the newly started Hadoop and YARN demons, which examine and record the current state of the cluster.
 
-	YARN Image here
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=.42]{rp-architecture-yarn.pdf}
+		\caption{The RADICAL-Pilot-YARN Architecture. As seen in \cite{hadoop_paper}.}
+		\label{fig:rp_yarn_arch}
+	\end{figure}
+
+	The RADICAL-Pilot scheduler has also been updated to include information about the current state of the cluster, including updates on the total memory available and the total number of cores in use. The scheduler then uses this state information to schedule the next task appropriately. Finally, the Application Manager, which handles the resource allocations, works with the YARN Resource Manager in order to coordinate the execution of tasks. RADICAL-Pilot provisions a Compute Unit with a Description that contains the resource requirements, and then requests that YARN create a container for it. By placing the Compute Unit within the YARN container, the YARN scheduler can then easily assign the container the optimal resources for execution \cite{hadoop_paper}. 
+
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=.22]{RP_YARN_Interaction_Diagram.pdf}
+		\caption{The interaction between RADICAL-Pilot and YARN. As seen in \cite{hadoop_paper}.}
+		\label{fig:rp_yarn_interaction}
+	\end{figure}
 
 	These extensions to RADICAL-Pilot give birth to they RADICAL-Pilot-YARN package, which contains functionality to operate on HPC and data-intensive tasks. In this paper, we will examine the performance of RADICAL-Pilot-YARN in comparison to RADICAL-Pilot by itself. We will do this through a simulation with a simple clustering algorithm.
 
@@ -60,6 +74,10 @@
 				\hline
 				Tasks & [8,16,32]\\
 				\hline
+				Clusters & [50,500,5000] \\
+				\hline
+				Total Data Points & [10000,100000,1000000]\\
+				\hline
 				Data sets & \url{dataset_100K_3d.in}, \url{dataset_10K_3d.in}, \url{dataset_1M_3d.in}\\
 				\hline
 			\end{tabu}
@@ -75,7 +93,7 @@
 
 		\begin{figure}[H]
 			\centering
-			\includegraphics[scale=.15]{rp_state_model_mapping.jpg}
+			\includegraphics[scale=.19]{rp_state_model_mapping.jpg}
 			\caption{Mapping of parameters to pilot state model. Derived from \cite{rp_state_diagram}.}
 			\label{fig:pilot_state_mapping}
 		\end{figure}
@@ -84,7 +102,7 @@
 
 		% Measurement equation
 		\begin{align*}
-			Time-to-Completion = DONE - UMGR\_STAGING\_INPUT\_PENDING \numberthis \label{1}
+			Time\_to\_Completion = DONE - UMGR\_STAGING\_INPUT\_PENDING \numberthis \label{1}
 		\end{align*}
 
 		This measurement, taken in seconds, provides us with the time necessary to complete a user's tasks.
@@ -120,100 +138,50 @@
 		\end{figure}
 
 		The 5000 cluster case also showed similarities to the trends in the 50 cluster and 500 cluster cases, as shown in Figure \ref{fig:5000}. Again, we see a large disparity in the execution times of RP and RP-YARN at 8 cores, ranging from 300 seconds to 700 seconds. The ratio between the two times relatively constant when compared to the 50 and 500 cluster cases. At 16 cores, we notice that the times-to-completion are almost identical, but the error bars give us more insight into the behavior. Since the error bar for RP-YARN is larger than that of RP, it is possible that the time-to-completion for RP-YARN may fluctuate between being greater than, less than, and equal to the time-to-completion for RP. At 32 cores, we see the largest difference of the three configurations between RP-YARN and RP, with a range of at most 200 seconds. Again, this supports the trends found in the other two cases. 
-	% Conclusion
-	% Future Work
 
+	% Reproducibility
+	\subsection{Reproducibility}
+		The experiments we performed can be replicated using the code located at \url{https://github.com/Nikhil-Shenoy/RADICAL-research/tree/master/yarn_replication/output_data}.
 
-		
-	% 	% Pipeline Weak Scaling
-	% 	\begin{figure}[H]
-	% 		\centering
-	% 		\includegraphics[scale=.30]{img/pipeline_weak_scaling.png}
-	% 		\caption{Weak Scaling with the Pipeline Pattern}
-	% 		\label{fig:pipeline_weak_scaling}
-	% 	\end{figure}
-
-	% 	Figure ~\ref{fig:pipeline_weak_scaling} shows the scaling behavior of each of the parameters. In the first graph, we observe that the EnsembleMD Core overhead stays relatively constant at about 18 seconds throughout the scaling. We also see that the EnsembleMD Pattern Overhead is at most 3 seconds, which is a fraction of the Core overhead. Finally, we see that the RADICAL-Pilot overhead increases rapidly as the scale increases. Ratios between RP overheads from a configuration to the previous configuration yield a value of about 1.8, which implies that the overhead is growing linearly.
-	% 	In the second graph of Figure 1, we see that the execution times for both Step 1 and Step 2, which were the Makefile and Character Count respectively, stay very much constant throughout the scaling, except for the anomaly of Step 1 in the first configuration. This is to be expected, as the settings in the configuration should have no effect on how long it takes to run the underlying Bash commands. However, the times shown are much larger than those observed when the commands are executed directly from a Bash prompt. It is possible that the extra time is due to overhead from a combination of EnsembleMD and RADICAL-Pilot, but we have not dissected this additional component.
-	% 	Finally, the data movement shows a steady increase in duration. The ratios from one configuration to the previous configuration fluctuate from 1.6 to 1.9, but generally imply a linear increase as a function of the number of cores and execution instances. 
-
-
-	% 	\begin{figure}[H]
-	% 		\centering
-	% 		\includegraphics[scale=.30]{img/pipeline_strong_scaling.png}
-	% 		\caption{Strong Scaling with the Pipeline Pattern}
-	% 		\label{fig:pipeline_strong_scaling}
-	% 	\end{figure}
-
-	% 	Figure ~\ref{fig:pipeline_strong_scaling} displays the strong scaling results from the Pipeline. Looking at the EnsembleMD Core Overhead, we find that it averages to around 22 seconds. On the other hand, the Pattern Overhead was measured at 15ms on average, so the values at each configuration did not register on the scale of the Core Overhead. The RP overhead remains approximately constant at around 8 seconds. The execution times for Steps 1 and 2 show a much different trend than they did in the weak scaling experiments; in general, Step 1 showed execution times that were closer to the actual execution time, but were still three orders of magnitude greater. Step 2 fluctuated much more than it did during the weak scaling experiments.
-	% 	Data movement shows a general decline in duration, aside from the anomaly with 64 cores. This may be due to the increased number of cores available for the movement.
-
-	% \pagebreak
-	% \subsection{Simulation Analysis}
-
-	% 	For Simulation Analysis, we considered the parameter definitions in equations 7 through 11.
-
-	% 	\begin{samepage}
-	% 		\begin{figure}[H]
-	% 			\centering
-	% 			\includegraphics[scale=.29]{iteration_3/sa_weak_scaling.png}
-	% 			\caption{Weak Scaling with the Simulation Analysis Pattern}
-	% 			\label{fig:sa_weak_scaling}
-	% 		\end{figure}
-
-	% 		In Figure ~\ref{fig:sa_weak_scaling}, we see scaling behavior similar to what we saw in the original pipeline weak scaling experiment. The EnsembleMD Core Overhead is essentially constant, the Pattern Overhead is small in comparison and is capped at around 5 seconds, and the RP overhead does show an increase across the combinations. However, the RADICAL-Pilot overhead does not show a distinct linear progression in the same fashion as the Pipeline Weak Scaling plot did. 
-	% 		The second plot shows the phases of execution of the experiment. The pre-loop phase contained no logic, so our inference is that the times shown are the overhead introduced to make the call to the pre-loop. The Simulation execution time, which contained the Makefile Kernel, was constant throughout the scaling, but took longer on average than it did for the Pipeline. The Character Count, encapsulated by the Analysis stage, was truer to the values recorded in the Pipeline Weak Scaling plot.
-	% 		The Data movement plot shows a similar increase in the time needed to download the output data, but the trend does not seem to be linear. 
-	% 	\end{samepage}
-
-	% 	\begin{figure}[H]
-	% 		\centering
-	% 		\includegraphics[scale=.30]{iteration_3/sa_strong_scaling.png}
-	% 		\caption{Strong Scaling with the Simulation Analysis Pattern}
-	% 		\label{fig:sa_strong_scaling}
-	% 	\end{figure}
-		
-	% 	Finally, we examine the behaviors of each measurement during the Strong Scaling experiments with Simulation Analysis in Figure ~\ref{fig:sa_strong_scaling}. EnsembleMD Core Overhead wavers around 20 seconds, whereas the RADICAL-Pilot Overhead has a large amount of variation in its time. Again, the EnsembleMD Pattern Overhead averages to approximately 20ms, and thus are not be visible on the same graph.
-	% 	In the Simulation phase, we find that the execution time has been reduced dramatically, and that a representative value for it could be 13ms. The Analysis phase also varies slightly, but can be approximated at 7ms.
-	% 	The Data Movement durations are troubling, seeing as there is not a clear pattern to how the different values were obtained. The scaling does not seem to have had a visible effect on the duration of this phase.
-
-	% \subsection{Reproducibility}
-	% 	The experiments described in this paper can be reproduced easily; all code for this work is located at \url{https://github.com/Nikhil-Shenoy/RADICAL-research/tree/master/testing/summary}. We enumerate the steps as follows:
-	% 	\begin{enumerate}
-	% 		\item Set up virtual environment on local machine using \url{virtualenv} tool.
-	% 		\item Install the EnsembleMD Toolkit using the instructions found in the documentation at: \\
-	% 			  \url{http://radicalensemblemd.readthedocs.org/en/stable/installation.html}
-	% 		\item Acquire an account on the remote target machine. In this case, the target machine was XSEDE's Stampede.
-	% 		\item Generate a free MongoDB instance using MongoLab (\url{https://mlab.com/}) and note its access URL.	
-	% 		\item Modify the \url{bag_of_tasks.py} and the \url{simulation_analysis_loop.py} examples in the \url{radical.ensemblemd/examples} folder. This includes changing the kernels to Makefile and CharacterCount and changing the size of the input file to 10Mb
-	% 		\item For each core count in the scale [1,16,32,64,128], run the application at least four times. This allows the experimenter to verify the accuracy of his results.
-	% 		\item Set the resource to the remote target machine for which you now have an account.
-	% 		\item In the case of weak scaling, set the number of instances equal to the core count. In the case of strong scaling, set the number of instances to 1, but continue to alter the core count in the same way as in the weak scaling case.
-	% 		\item Use Tmux or another terminal multiplexer to start the job on your machine. You can detach the job once EnsembleMD begins executing on the remote target machine. It is recommended to start the job at night, as it will be completed by the next morning.
-	% 		\item If any errors occur while testing, remember to safely close and stop the EnsembleMD script. Also make sure that the requrested resources are not still associated with one's account on the remote machine. One can verify this by logging in to that machine and checking the job status.
-	% 		\item Remember to run all jobs with the following environment variables:
-	% 			\begin{itemize}
-	% 				\item RADICAL\_ENMD\_VERBOSE=DEBUG
-	% 				\item RADCIAL\_ENMD\_PROFILING=1
-	% 				\item RADICAL\_PILOT\_DBURL= <your mongodb url>
-	% 			\end{itemize}
-	% 	\end{enumerate}
+		The exact steps are as follows:
+		\begin{enumerate}
+			\item Set up virtual environment on local machine using \url{virtualenv} tool.
+			\item Install RADICAL-Pilot using the instructions found in the documentation at: \\
+				  \url{https://radicalpilot.readthedocs.io/en/stable/installation.html}
+			\item Acquire an account on the remote target machine. In this case, the target machine was XSEDE's Stampede.
+			\item Generate a free MongoDB instance using MongoLab (\url{https://mlab.com/}) and note its access URL.	
+			\item No modifications to any of the Python files is required, unless there are problems with loading modules. If this is the case, then one should modify the instructions in the \url{pre_exec} phase of the Compute Unit to clear all modules and then reload the required modules.
+			\item Once all modifications are made, the application can be started by passing the appropriate arguments to the \url{k-means.py} script. The parameters (in this order) are:
+				\begin{itemize}
+					\item Number of clusters
+					\item Number of elements in each vector data point
+					\item Number of cores to be used
+					\item Number of tasks to be run
+					\item Input data file
+					\item Name of the output profile
+					\item Name of scheduling queue
+					\item Name of remote machine
+				\end{itemize}
+			\item To run all the configurations test for this paper, simply run the \url{run_yarn.py} script. This file cycles through and runs all of the 18 configurations displayed in the plots without requiring any additional parameters.
+			\item Use Tmux or another terminal multiplexer to start the job from your machine. You can detach the job once it begins executing on the remote target machine. It is recommended to start the job at night, as it will be completed by the next morning.
+			\item If any errors occur while testing, remember to safely close and stop the RADICAL-Pilot script. Also make sure that the requrested resources are not still associated with one's account on the remote machine. One can verify this by logging in to that machine and checking the job status.
+			\item Remember to run all jobs with the following environment variables:
+				\begin{itemize}
+					\item RADICAL\_PILOT\_VERBOSE=DEBUG
+					\item RADICAL\_PILOT\_DBURL= <your mongodb url>
+				\end{itemize}
+		\end{enumerate}
 
 \section{Conclusion}
-	% This set of experiments were conducted to further understand the EnsembleMD Toolkit's scaling behavior. Based on the data from our experiments, we were able to identify trends that hinted at the Toolkit's capabilities for different core-task configurations. We considered stages of operation within the Toolkit that best exemplified its functionality; the Core Overhead, the Pattern Overhead, the RADICAL-Pilot Overhead, the Task Execution Time, and the Data Movement. While not all of these parameters showed distinct trends, we were able to glean information from a few of the parameters.
 
-	% The Task Execution time, for both the Makefile and Character Count steps, were found to be relatively constant across most configurations. This behavior is expected, as the time required to execute a bash shell command should only change if different input is given to it. In our case, the kernels in each step are doing the exact same tasks in every configuration, so a change in the execution time would be troubling. Even though the execution time was constant, we noticed that it was much higher than the time the same tasks took when executed from the Bash command prompt. This indicates that there are additional RADICAL-Pilot and EnsembleMD wrappings around the Bash commands that increase the duration. While dissecting that overhead was not the goal of this experiment, it is a candidate for future work.
-	% Throughout all the experiments performed, we observed that the EnsembleMD Core Overhead stayed relatively constant over all configurations. This implies that users and developers can rely on the performance of the EnMD Core staying constant regardless of the tasks the user gives it.
-	
-	% In almost all measurements of the EnMD Pattern Overhead, we found that its duration was on the order of milliseconds. This is useful to users because they can be assured that any preparation done by EnMD to before executing the task is very efficient and is not expected to hinder the completion of the task. For developers, this indicates that the Toolkit makes quick transitions between states in the flow of execution.
-	% RP Overhead seems to scale in some cases, stay constant in other cases, and fluctuate in others. Because of this, we cannot extract a useful pattern and characterize RP's behavior at scale solely based on these experiments. As a majority of RP was implemented before EnMD, we would expect its performance at scale to have been worked on extensively and made reliable. We would need more experiments to properly pin down the behavior, as knowledge of how efficiently the pilot functions is crucial to the application's execution.
-
- %    In these experiments, we measured data movement as the time needed to download the output of our tasks from the remote machine to the local machine, seeing as all the input data was being generated on the remote machine. Both of the weak scaling cases showed that the time required for the data movement was directly proportional to the core/instance configuration. The Pipeline case seemed to imply a linear relationship between the variables, whlie the Simulation-Analysis case implied a more quadratic relationship. We have not investigated the relationship in detail, but determining such relationships would allow the user to restructure his application and explore the tradeoffs between effiency and data usage. Unfortunately, we were not able to notice distinct patterns in the strong scaling cases. We do believe that relationships similar to the ones suggested by the weak scaling experiments do exist, but further testing would be required to find them.
+	This set of experiments was conducted to attempt to verify the performance benefits of the YARN extension to RADICAL-Pilot over the RADICAL-Pilot module by itself. We measured the time-to-completion of the different configurations of k-Means clustering as a way to simulate a user's experience with both softwares and tried to empirically demonstrate the capabilities of the new extensions. While the theory and design decisions behind RADICAL-Pilot-YARN are sound, the evidence that we found through our experiments currently does not support it. On the other hand, the data does not decisively reject the expectation that RADICAL-Pilot-YARN should incur a smaller time-to-completion. Across the three configurations of clusters and points, we observe that, in the cases of 8 and 32 cores, that RP-YARN always had a larger time-to-completion than that of RP by itself. However, the ratio between the execution time for RP-YARN and RP at 8 cores is larger than it is at 32 cores. This may imply that the two softwares have similar performance at high core counts, and that a difference in performance can only be noticed at lower core counts. A possible reason for this may be that an increased overhead incurred by the YARN components at lower core counts, but that penalty becomes reduced as more cores are added. The other significant trend across all configurations was that of the 16 core cases; in two out of the three, RADICAL-Pilot was observed to have a larger time-to-completion than RADICAL-Pilot-YARN. In the third case, the times-to-completion were essentially equal in mean value, but the error bars demonstrated that the RP-YARN time could fluctuate from being greater than RP to less than RP. Two immediate implications can arise out of this; if, in subsequent experiments, RP-YARN is shown to have a greater time-to-completion than RP, then the result would aid in rejecting the theory behind adding the YARN components to RADICAL-Pilot. All but two configurations of cluster, points, and cores would show that RP-YARN is outpaced by RP, suggesting that the YARN components are not necessary. Alternatively, the RP-YARN time being less than the RP time would only lead to additional inconclusive evidence, as no clear relationship between RP and RP-YARN can be established. In summary, these experiments have not been able to successfully verify the advantage of adding the YARN scheduling and resource management components to the existing RADICAL-Pilot software. The evidence seemingly indicates that RADICAL-Pilot-YARN actually slows down the performance of the system, arguing against the theoritcal underpinnings of the YARN extensions.
 
 \section{Future Work}
-	% Performance testing is an ongoing body of work in any scientific experiment, and the results presented here can be extended into any different directions. First, one could examine the relationship between the time taken to process varying sizes of data and the number of cores given to process that data. Such information would be useful in gauging EnsembleMD`s capability to handle large and small amounts of data. The same experiments could be run on all the high performance machines supported by the Toolkit, with the expectation that the user gets similar performance no matter which machine he uses. Next, one could consider the Toolkit`s role in data movement; in these experiments, we considered only the Toolkit`s involvement in transfers between the local and remote machine. An interesting avenue to explore would be the duration of all the operations and changes that the Toolkit makes to the data while it is on the remote node but not being processed. This, combined with this article`s measurment of local/remote transfers, may better reflect the overhead incurred by data movement. Finally, discovery of best-fit functions for the important components of the Toolkit, such as the Pattern Overhead, RP Overhead, and Data Movement, would characterize the Toolkit in an easy-to-use way. The benefit of using a simple function to approximate the behavior of a Toolkit component would provide the user with instant information on how to structure his application, leading to increased usability.
+	These experiments can and should be extended to analyze the full relationship between RADICAL-Pilot and RADICAL-Pilot-YARN. Verification of our experimental results would be useful to those currently developing additional YARN functionality for RADICAL-Pilot, as the performance information can suggest whether the new modules are necessary. Additional work can explore the relationship between cores and each configuration by utilizing higher core counts, machine permitting. Such an experiment would verify whether the performance of RADICAL-Pilot and RADICAL-Pilot-YARN becomes indistinguishable at larger core counts. Finally, one could perform a formal comparison between the results obtained in \cite{hadoop_paper} and our results to find out the changes made to RADICAL-Pilot in the intervening time. The additions in the six-month time period could provide insight into the behavior RADICAL-Pilot in these experiments.
 
 \section{Lessons Learned}
+	Really, the lessons I learned were not much different than those I learned from the EnsembleMD performance analysis, as the work was very similar in nature to these experiments.
+
 	% Analyzing the performance of a system can lead to many insights about the system, and about the attitude with which one approaches experimentation in general. During our experience with testing the EnsembleMD Toolkit, we learned a variety of concepts which we believe have improved our abilities as researchers.
 
 	% One of the most important concepts we learned about is careful design of experiments. At the beginning of our experimentation, we had a tendency to dive into the data head first without a solid plan for what we were measuring. We tried to find relationships between every pair of variables in the data set, but soon learned that this was much too inefficient to produce good results. In many of those tests, the relations we found did not yield any useful information about the system, which rendered all the time spent running those simulations useless. Not only would these types of experiments not produce results, but adding just one variable would dramatically increase the complexity of running the entire set of simulations. After this experiment, we learned to focus on specific behaviors of the system we wanted to examine, such as strong scaling, and tailored our experiments towards those. This resulted in concise, informative results that provided useful information for the development team.
