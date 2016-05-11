@@ -150,7 +150,7 @@
 			% Param/State Mapping
 			\begin{figure}[H]
 				\centering
-				\includegraphics[scale=.15]{enmd_state_model_mapping.jpg}
+				\includegraphics[scale=.10]{enmd_state_model_mapping.jpg}
 				\caption{Mapping of parameters to pilot state model. Derived from \cite{rp_state_diagram}.}
 				\label{fig:param_pilot_state_mapping}
 			\end{figure}
@@ -218,7 +218,7 @@
 
 			\begin{figure}[H]
 				\centering
-				\includegraphics[scale=.3]{pattern_and_rp_overheads.jpg}
+				\includegraphics[scale=.28]{pattern_and_rp_overheads.jpg}
 				\caption{EnMD and RP Overheads. Derived from \cite{rp_state_diagram}.}
 				\label{fig:pattern_rp_overheads}
 			\end{figure}
@@ -234,7 +234,8 @@
 			% Pipeline Weak Scaling
 			\begin{figure}[H]
 				\centering
-				\includegraphics[scale=.30]{img/pipeline_weak_scaling.png}
+				% \includegraphics[scale=.30]{pipeline_weak_scaling.png}
+				\includegraphics[width = 9cm, height = 8cm]{pipeline_weak_scaling.png}
 				\caption{Weak Scaling with the Pipeline Pattern}
 				\label{fig:pipeline_weak_scaling}
 			\end{figure}
@@ -246,7 +247,8 @@
 
 			\begin{figure}[H]
 				\centering
-				\includegraphics[scale=.30]{img/pipeline_strong_scaling.png}
+				% \includegraphics[scale=.25]{img/pipeline_strong_scaling.png}
+				\includegraphics[width = 10cm, height = 9cm]{pipeline_strong_scaling.png}
 				\caption{Strong Scaling with the Pipeline Pattern}
 				\label{fig:pipeline_strong_scaling}
 			\end{figure}
@@ -254,26 +256,26 @@
 			Figure ~\ref{fig:pipeline_strong_scaling} displays the strong scaling results from the Pipeline. Looking at the EnsembleMD Core Overhead, we find that it averages to around 22 seconds. On the other hand, the Pattern Overhead was measured at 15ms on average, so the values at each configuration did not register on the scale of the Core Overhead. The RP overhead remains approximately constant at around 8 seconds. The execution times for Steps 1 and 2 show a much different trend than they did in the weak scaling experiments; in general, Step 1 showed execution times that were closer to the actual execution time, but were still three orders of magnitude greater. Step 2 fluctuated much more than it did during the weak scaling experiments.
 			Data movement shows a general decline in duration, aside from the anomaly with 64 cores. This may be due to the increased number of cores available for the movement.
 
+		\pagebreak
 		\subsubsection{Simulation Analysis}
 
 			For Simulation Analysis, we considered the parameter definitions in equations 7 through 11.
 
-			\begin{samepage}
-				\begin{figure}[H]
-					\centering
-					\includegraphics[scale=.29]{sa_weak_scaling.png}
-					\caption{Weak Scaling with the Simulation Analysis Pattern}
-					\label{fig:sa_weak_scaling}
-				\end{figure}
+			\begin{figure}[H]
+				\centering
+				\includegraphics[scale=.29]{sa_weak_scaling.png}
+				\caption{Weak Scaling with the Simulation Analysis Pattern}
+				\label{fig:sa_weak_scaling}
+			\end{figure}
 
-				In Figure ~\ref{fig:sa_weak_scaling}, we see scaling behavior similar to what we saw in the original pipeline weak scaling experiment. The EnsembleMD Core Overhead is essentially constant, the Pattern Overhead is small in comparison and is capped at around 5 seconds, and the RP overhead does show an increase across the combinations. However, the RADICAL-Pilot overhead does not show a distinct linear progression in the same fashion as the Pipeline Weak Scaling plot did. 
-				The second plot shows the phases of execution of the experiment. The pre-loop phase contained no logic, so our inference is that the times shown are the overhead introduced to make the call to the pre-loop. The Simulation execution time, which contained the Makefile Kernel, was constant throughout the scaling, but took longer on average than it did for the Pipeline. The Character Count, encapsulated by the Analysis stage, was truer to the values recorded in the Pipeline Weak Scaling plot.
-				The Data movement plot shows a similar increase in the time needed to download the output data, but the trend does not seem to be linear. 
-			\end{samepage}
+			In Figure ~\ref{fig:sa_weak_scaling}, we see scaling behavior similar to what we saw in the original pipeline weak scaling experiment. The EnsembleMD Core Overhead is essentially constant, the Pattern Overhead is small in comparison and is capped at around 5 seconds, and the RP overhead does show an increase across the combinations. However, the RADICAL-Pilot overhead does not show a distinct linear progression in the same fashion as the Pipeline Weak Scaling plot did. 
+			The second plot shows the phases of execution of the experiment. The pre-loop phase contained no logic, so our inference is that the times shown are the overhead introduced to make the call to the pre-loop. The Simulation execution time, which contained the Makefile Kernel, was constant throughout the scaling, but took longer on average than it did for the Pipeline. The Character Count, encapsulated by the Analysis stage, was truer to the values recorded in the Pipeline Weak Scaling plot.
+			The Data movement plot shows a similar increase in the time needed to download the output data, but the trend does not seem to be linear. 
 
 			\begin{figure}[H]
 				\centering
-				\includegraphics[scale=.30]{sa_strong_scaling.png}
+				% \includegraphics[scale=.30]{sa_strong_scaling.png}
+				\includegraphics[width = 8cm, height = 9cm]{sa_strong_scaling.png}
 				\caption{Strong Scaling with the Simulation Analysis Pattern}
 				\label{fig:sa_strong_scaling}
 			\end{figure}
@@ -328,7 +330,8 @@
 
 			\begin{figure}[H]
 				\centering
-				\includegraphics[scale=.19]{rp_state_model_mapping.jpg}
+				% \includegraphics[scale=.19]{rp_state_model_mapping.jpg}
+				\includegraphics[width = 12cm, height = 12cm]{rp_state_model_mapping.jpg}
 				\caption{Mapping of parameters to pilot state model. Derived from \cite{rp_state_diagram}.}
 				\label{fig:pilot_state_mapping}
 			\end{figure}
